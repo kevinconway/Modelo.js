@@ -436,6 +436,13 @@ For convenience and portability, both Mocha and Express are included in this
 repository. For further convenience, a browser based test runner has also been
 included.
 
+Commit Messages
+---------------
+
+All commit messages in this repository should conform with the commit message
+pattern detailed in
+`this document <https://github.com/StandardsDriven/Repository>`_.
+
 Contributor's Agreement
 -----------------------
 
