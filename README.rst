@@ -4,7 +4,7 @@ Modelo.js
 
 **An isomorphic JavaScript object framework.**
 
-*Status: In Development*
+*Status: In Early Development*
 
 Usage Examples
 ==============
