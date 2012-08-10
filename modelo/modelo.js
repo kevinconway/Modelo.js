@@ -27,6 +27,8 @@
 
                 var y;
 
+                options = options || {};
+
                 // Iterate through constructor functions and call them in the
                 // current context.
                 for (y = 0; y < args.length; y = y + 1) {
