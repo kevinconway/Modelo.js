@@ -89,9 +89,9 @@ be included in the new definition. For example::
 
     Talker.prototype.speak = function () {
         if (this.language === 'EN') {
-            console.log("Hello.")
+            console.log("Hello.");
         } else if (this.language === 'ES') {
-            console.log("Hola.")
+            console.log("Hola.");
         } else {
             console.log("...");
         }
@@ -102,7 +102,7 @@ be included in the new definition. For example::
     });
 
     Walker.prototype.walk = function () {
-        console.log("These " + this.legs + " boots were made for walkin'.")
+        console.log("These " + this.legs + " boots were made for walkin'.");
     };
 
     Customer = Modelo.define(Person, Talker, Walker, function (options) {
