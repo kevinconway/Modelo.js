@@ -335,19 +335,6 @@ Options Reference:
         A Modelo.property that should be used to validate the contents of the
         array.
 
-object
-^^^^^^
-
-Example Call: Modelo.property("object")
-
-Options Reference:
-
-    -   nullable
-
-        A `true` or `false` indicator of whether or not `null` is an acceptable
-        value for this property.
-
-
 Setup Instructions
 ==================
 

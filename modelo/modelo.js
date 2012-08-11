@@ -104,9 +104,6 @@
             case 'list':
                 break;
 
-            case 'object':
-                break;
-
             }
 
         };
