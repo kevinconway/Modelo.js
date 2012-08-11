@@ -6,6 +6,41 @@ Modelo.js
 
 *Status: In Early Development*
 
+Development Plan
+================
+
+Pass 1 *(Current Pass)*
+
+    Initial implementation of object definition and property validation API's.
+
+Pass 2
+
+    Synchronous relationship API. (1-1, 1-N, N-N)
+
+Pass 3
+
+    Synchronous event handling for objects, properties, and relationships.
+
+Pass 4
+
+    Cross platform asynchronous support.
+
+Pass 5
+
+    Asynchronous relationship API.
+
+Pass 6
+
+    Asynchronous event handling for objects, properties, and relationships.
+
+Pass 7
+
+    Persistence layer API specification.
+
+Pass 8
+
+    Cross platform persistence layers. (Memory)
+
 Usage Examples
 ==============
 
