@@ -108,6 +108,23 @@
 
             });
 
+            describe('property generator', function () {
+
+                it('generates undefined properties', function () {
+
+                    var T = modelo.define(function (options) {
+                        this.name = modelo.property();
+                    }),
+                    i = new T();
+
+                    expect(i.name()).to.be(undefined);
+                    i.name('Juan Pérez');
+                    expect(i.name()).to.be('Juan Pérez');
+
+                });
+
+            });
+
         });
 
     });

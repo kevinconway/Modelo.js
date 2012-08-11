@@ -74,8 +74,32 @@
                 string_prop,
                 bool_prop,
                 number_prop,
-                array_prop,
-                object_prop;
+                array_prop;
+
+            // An undefined property is simply an unvalidated property
+            // with a getter and setter interface.
+            undefined_prop = function () {
+
+                // Place the actual value within a private and
+                // unreachable scope for integrity.
+                var prop = {
+                    value: undefined,
+                    type: "undefined"
+                };
+
+                return function (val) {
+                    if (val === undefined) {
+                        return prop.value;
+                    }
+
+                    prop.value = val;
+
+                    // Add the option for fluid interface by returning
+                    // the current context.
+                    return this;
+                };
+
+            };
 
             // Check for no data type
             if (args.length === 0 || typeof args[0] !== "string") {
