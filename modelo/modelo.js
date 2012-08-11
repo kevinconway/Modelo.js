@@ -67,10 +67,11 @@
 
         };
 
-        property = function () {
-            var args = Array.prototype.slice.call(arguments),
-                type,
-                undefined_prop,
+        // Wrap in submodule to allow for better memory use. In this format
+        // property generators can exist in a common scope to avoide being
+        // redefined on each call to Modelo.property().
+        property = (function () {
+            var undefined_prop,
                 string_prop,
                 bool_prop,
                 number_prop,
@@ -101,36 +102,54 @@
 
             };
 
-            // Check for no data type
-            if (args.length === 0 || typeof args[0] !== "string") {
-                return undefined_prop();
-            }
+            return function () {
+                var args = Array.prototype.slice.call(arguments),
+                    type,
+                    options,
+                    validators;
 
-            type = args.pop();
+                type = "undefined";
+                if (args.length > 0 && typeof args[0] === "string") {
+                    type = args.pop();
+                }
 
-            switch (type) {
+                options = {};
+                if (args.length > 0 && typeof args[0] === "object") {
+                    options = args.pop();
+                }
 
-            case 'string':
-                break;
+                // This list should contain all custom validation functions
+                // provided to the property generator.
+                validators = args;
 
-            case 'bool':
-                break;
+                switch (type) {
 
-            case 'boolean':
-                break;
+                case 'undefined':
+                    return undefined_prop();
 
-            case 'number':
-                break;
+                case 'string':
+                    break;
 
-            case 'array':
-                break;
+                case 'bool':
+                    break;
 
-            case 'list':
-                break;
+                case 'boolean':
+                    break;
 
-            }
+                case 'number':
+                    break;
 
-        };
+                case 'array':
+                    break;
+
+                case 'list':
+                    break;
+
+                }
+
+            };
+
+        }.call(this));
 
         // Define and return the module.
         return {

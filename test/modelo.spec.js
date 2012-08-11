@@ -114,12 +114,25 @@
 
                     var T = modelo.define(function (options) {
                         this.name = modelo.property();
+                        this.age = modelo.property();
                     }),
                     i = new T();
 
+                    // Test default values of `undefined`.
                     expect(i.name()).to.be(undefined);
+                    expect(i.age()).to.be(undefined);
+
+                    // Test ability to set values and retrieve
+                    // those new values.
                     i.name('Juan Pérez');
+                    i.age(43);
                     expect(i.name()).to.be('Juan Pérez');
+                    expect(i.age()).to.be(43);
+
+                    // Test the fluid interface option and check
+                    // for the appropriate self references.
+                    expect(i.age(43)).to.be(i);
+                    expect(i.name('Juan Pérez')).to.be(i);
 
                 });
 
