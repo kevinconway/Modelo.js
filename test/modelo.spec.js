@@ -136,6 +136,76 @@
 
                 });
 
+                it('generates string properties', function () {
+
+                    var T = modelo.define(function (options) {
+                        this.name = modelo.property("string");
+                    }),
+                    i = new T();
+
+                    // Test default value and nullability.
+                    expect(i.name()).to.be(undefined);
+                    expect(function () {
+                        i.name(null);
+                    }).to.not.throwError();
+                    expect(i.name()).to.be(null);
+
+                    // Test fluid interface option.
+                    expect(i.name('Juan Pérez')).to.be(i);
+                    expect(i.name()).to.be('Juan Pérez');
+
+                    // Test not null validation
+                    T = modelo.define(function (options) {
+                        this.name = modelo.property("string", {
+                            nullable: false
+                        });
+                    });
+                    i = new T();
+
+                    // Test nullability and type checking.
+                    expect(i.name()).to.be(undefined);
+                    expect(function () {
+                        i.name(null);
+                    }).to.throwError();
+                    expect(i.name()).to.be(undefined);
+
+                    expect(function () {
+                        i.name(12534);
+                    }).to.throwError();
+
+                    // Test length validations
+                    T = modelo.define(function (options) {
+                        this.name = modelo.property("string", {
+                            nullable: false,
+                            min_length: 2,
+                            max_length: 3
+                        });
+                    });
+                    i = new T();
+
+                    expect(i.name()).to.be(undefined);
+                    expect(function () {
+                        i.name('1');
+                    }).to.throwError();
+                    expect(i.name()).to.be(undefined);
+
+                    expect(function () {
+                        i.name('12');
+                    }).to.not.throwError();
+                    expect(i.name()).to.be('12');
+
+                    expect(function () {
+                        i.name('123');
+                    }).to.not.throwError();
+                    expect(i.name()).to.be('123');
+
+                    expect(function () {
+                        i.name('1234');
+                    }).to.throwError();
+                    expect(i.name()).to.be('123');
+
+                });
+
             });
 
         });

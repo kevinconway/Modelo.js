@@ -75,7 +75,125 @@
                 string_prop,
                 bool_prop,
                 number_prop,
-                array_prop;
+                array_prop,
+                validate;
+
+            // This object literal contains all of the built-in property
+            // validation functions that can be used by the properties
+            // defined below.
+            validate = {
+                min_length: function (len) {
+
+                    return function (val) {
+
+                        if (String(val).length < len) {
+
+                            return {
+
+                                valid: false,
+
+                                message: "Value must be more than " +
+                                            String(len) +
+                                            " characters long."
+
+                            };
+
+                        }
+
+                        return true;
+
+                    };
+
+                },
+
+                max_length: function (len) {
+
+                    return function (val) {
+
+                        if (String(val).length > len) {
+
+                            return {
+
+                                valid: false,
+
+                                message: "Value must be less than " +
+                                            String(len) +
+                                            " characters long."
+
+                            };
+
+                        }
+
+                        return true;
+
+                    };
+
+                },
+
+                not_null: function () {
+
+                    return function (val) {
+
+                        if (val === undefined || val === null || isNaN(val)) {
+
+                            return {
+                                valid: false,
+                                message: "Value cannot be null."
+                            };
+
+                        }
+
+                        return true;
+                    };
+                },
+
+                min_value: function (v) {
+
+                    return function (val) {
+
+                        if (val < v) {
+
+                            return {
+
+                                valid: false,
+
+                                message: "Value must be more than " +
+                                            String(v) + "."
+
+                            };
+
+                        }
+
+                        return true;
+
+                    };
+
+                },
+
+                max_value: function (v) {
+
+                    return function (val) {
+
+                        if (val > v) {
+
+                            return {
+
+                                valid: false,
+
+                                message: "Value must be less than " +
+                                            String(v) + "."
+
+                            };
+
+                        }
+
+                        return true;
+
+                    };
+
+                }
+
+            };
 
             // An undefined property is simply an unvalidated property
             // with a getter and setter interface.
@@ -89,8 +207,11 @@
                 };
 
                 return function (val) {
+
                     if (val === undefined) {
+
                         return prop.value;
+
                     }
 
                     prop.value = val;
@@ -102,6 +223,91 @@
 
             };
 
+            string_prop = function (options, validators) {
+
+                var prop = {
+                    value: undefined,
+                    type: "string"
+                };
+
+                return function (val) {
+
+                    var x,
+                        result;
+
+                    if (val === undefined) {
+
+                        return prop.value;
+
+                    }
+
+                    // Insert length validators as the last checks before
+                    // custom validation functions.
+                    if (options.min_length !== undefined) {
+
+                        validators.splice(0, 0, validate.min_length(options.min_length));
+
+                    }
+
+                    if (options.max_length !== undefined) {
+
+                        validators.splice(0, 0, validate.max_length(options.max_length));
+
+                    }
+
+                    // Insert type checking.
+                    validators.splice(0, 0, function (value) {
+
+                        if (typeof value !== "string" &&
+                            value !== null &&
+                            value !== undefined) {
+                            return {
+                                valid: false,
+                                message: "Value must be a string."
+                            };
+                        }
+
+                        return true;
+
+                    });
+
+                    // Insert check for null before check for type.
+                    if (options.nullable !== undefined &&
+                        options.nullable !== true) {
+
+                        validators.splice(0, 0, validate.not_null());
+
+                    }
+
+                    for (x = 0; x < validators.length; x = x + 1) {
+
+                        result = validators[x].call({}, val);
+
+                        if (result === false) {
+
+                            throw new Error('Validation failed for value ' +
+                                            val + '.');
+
+                        }
+
+                        if (typeof result === 'object' &&
+                            result.valid !== true) {
+
+                            throw new Error(result.message);
+
+                        }
+
+                    }
+
+                    prop.value = val;
+
+                    return this;
+
+                };
+
+
+            };
+
             return function () {
                 var args = Array.prototype.slice.call(arguments),
                     type,
@@ -110,12 +316,12 @@
 
                 type = "undefined";
                 if (args.length > 0 && typeof args[0] === "string") {
-                    type = args.pop();
+                    type = args.splice(0, 1)[0];
                 }
 
                 options = {};
                 if (args.length > 0 && typeof args[0] === "object") {
-                    options = args.pop();
+                    options = args.splice(0, 1)[0];
                 }
 
                 // This list should contain all custom validation functions
@@ -128,22 +334,25 @@
                     return undefined_prop();
 
                 case 'string':
-                    break;
+                    return string_prop(options, validators);
 
                 case 'bool':
-                    break;
+                    return bool_prop(options, validators);
 
                 case 'boolean':
-                    break;
+                    return bool_prop(options, validators);
 
                 case 'number':
-                    break;
+                    return number_prop(options, validators);
 
                 case 'array':
-                    break;
+                    return array_prop(options, validators);
 
                 case 'list':
-                    break;
+                    return array_prop(options, validators);
+
+                default:
+                    throw new Error('Unrecognized type of ' + type + '.');
 
                 }
 
