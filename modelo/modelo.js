@@ -308,6 +308,77 @@
 
             };
 
+            bool_prop = function (options, validators) {
+
+                var prop = {
+                    value: undefined,
+                    type: "boolean"
+                };
+
+                return function (val) {
+
+                    var x,
+                        result;
+
+                    if (val === undefined) {
+
+                        return prop.value;
+
+                    }
+
+                    // Insert type checking.
+                    validators.splice(0, 0, function (value) {
+
+                        if (typeof value !== "boolean" &&
+                            value !== null &&
+                            value !== undefined) {
+                            return {
+                                valid: false,
+                                message: "Value must be a boolean."
+                            };
+                        }
+
+                        return true;
+
+                    });
+
+                    // Insert check for null before check for type.
+                    if (options.nullable !== undefined &&
+                        options.nullable !== true) {
+
+                        validators.splice(0, 0, validate.not_null());
+
+                    }
+
+                    for (x = 0; x < validators.length; x = x + 1) {
+
+                        result = validators[x].call({}, val);
+
+                        if (result === false) {
+
+                            throw new Error('Validation failed for value ' +
+                                            val + '.');
+
+                        }
+
+                        if (typeof result === 'object' &&
+                            result.valid !== true) {
+
+                            throw new Error(result.message);
+
+                        }
+
+                    }
+
+                    prop.value = val;
+
+                    return this;
+
+                };
+
+
+            };
+
             return function () {
                 var args = Array.prototype.slice.call(arguments),
                     type,

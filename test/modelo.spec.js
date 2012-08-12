@@ -206,6 +206,45 @@
 
                 });
 
+                it('generates boolean properties', function () {
+
+                    var T = modelo.define(function (options) {
+                        this.bool = modelo.property("boolean");
+                    }),
+                    i = new T();
+
+                    // Test default value and nullability.
+                    expect(i.bool()).to.be(undefined);
+                    expect(function () {
+                        i.bool(null);
+                    }).to.not.throwError();
+                    expect(i.bool()).to.be(null);
+
+                    // Test fluid interface option.
+                    expect(i.bool(true)).to.be(i);
+                    expect(i.bool()).to.be(true);
+
+                    // Test not null validation
+                    T = modelo.define(function (options) {
+                        this.bool = modelo.property("boolean", {
+                            nullable: false
+                        });
+                    });
+                    i = new T();
+
+                    // Test nullability and type checking.
+                    expect(i.bool()).to.be(undefined);
+                    expect(function () {
+                        i.bool(null);
+                    }).to.throwError();
+                    expect(i.bool()).to.be(undefined);
+
+                    expect(function () {
+                        i.bool(12534);
+                    }).to.throwError();
+
+                });
+
             });
 
         });
