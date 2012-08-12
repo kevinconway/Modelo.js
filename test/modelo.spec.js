@@ -245,6 +245,80 @@
 
                 });
 
+                it('generates number properties', function () {
+
+                    var T = modelo.define(function (options) {
+                        this.num = modelo.property("number");
+                    }),
+                    i = new T();
+
+                    // Test default value and nullability.
+                    expect(i.num()).to.be(undefined);
+                    expect(function () {
+                        i.num(null);
+                    }).to.not.throwError();
+                    expect(i.num()).to.be(null);
+
+                    // Test fluid interface option.
+                    expect(i.num(123)).to.be(i);
+                    expect(i.num()).to.be(123);
+
+                    // Test not null validation
+                    T = modelo.define(function (options) {
+                        this.num = modelo.property("number", {
+                            nullable: false
+                        });
+                    });
+                    i = new T();
+
+                    // Test nullability and type checking.
+                    expect(i.num()).to.be(undefined);
+                    expect(function () {
+                        i.num(null);
+                    }).to.throwError();
+                    expect(i.num()).to.be(undefined);
+
+                    expect(function () {
+                        i.num('12534');
+                    }).to.throwError();
+
+                    expect(function () {
+                        i.num(12534);
+                    }).to.not.throwError();
+
+                    // Test value validations
+                    T = modelo.define(function (options) {
+                        this.num = modelo.property("number", {
+                            nullable: false,
+                            min_value: 2,
+                            max_value: 3
+                        });
+                    });
+                    i = new T();
+
+                    expect(i.num()).to.be(undefined);
+                    expect(function () {
+                        i.num(1);
+                    }).to.throwError();
+                    expect(i.num()).to.be(undefined);
+
+                    expect(function () {
+                        i.num(2);
+                    }).to.not.throwError();
+                    expect(i.num()).to.be(2);
+
+                    expect(function () {
+                        i.num(3);
+                    }).to.not.throwError();
+                    expect(i.num()).to.be(3);
+
+                    expect(function () {
+                        i.num(4);
+                    }).to.throwError();
+                    expect(i.num()).to.be(3);
+
+                });
+
             });
 
         });

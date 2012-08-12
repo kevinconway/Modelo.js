@@ -379,6 +379,92 @@
 
             };
 
+            number_prop = function (options, validators) {
+
+                var prop = {
+                    value: undefined,
+                    type: "number"
+                };
+
+                return function (val) {
+
+                    var x,
+                        result;
+
+                    if (val === undefined) {
+
+                        return prop.value;
+
+                    }
+
+                    // Insert length validators as the last checks before
+                    // custom validation functions.
+                    if (options.min_value !== undefined) {
+
+                        validators.splice(0, 0, validate.min_value(options.min_value));
+
+                    }
+
+                    if (options.max_value !== undefined) {
+
+                        validators.splice(0, 0, validate.max_value(options.max_value));
+
+                    }
+
+                    // Insert type checking.
+                    validators.splice(0, 0, function (value) {
+
+                        if (typeof value !== "number" &&
+                            value !== null &&
+                            value !== undefined) {
+                            return {
+                                valid: false,
+                                message: "Value must be a number."
+                            };
+                        }
+
+                        return true;
+
+                    });
+
+                    // Insert check for null before check for type.
+                    if (options.nullable !== undefined &&
+                        options.nullable !== true) {
+
+                        validators.splice(0, 0, validate.not_null());
+
+                    }
+
+                    for (x = 0; x < validators.length; x = x + 1) {
+
+                        result = validators[x].call({}, val);
+
+                        if (result === false) {
+
+                            throw new Error('Validation failed for value ' +
+                                            val + '.');
+
+                        }
+
+                        if (typeof result === 'object' &&
+                            result.valid !== true) {
+
+                            throw new Error(result.message);
+
+                        }
+
+                    }
+
+                    prop.value = val;
+
+                    return this;
+
+                };
+
+
+            };
+
+
             return function () {
                 var args = Array.prototype.slice.call(arguments),
                     type,
