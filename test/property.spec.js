@@ -7,7 +7,7 @@
     var env = factory.env,
         def = factory.def,
         deps = {
-            amd: ['lib/expect', 'lib/modelo', 'lib/property'],
+            amd: ['lib/expect', '../modelo/modelo', '../modelo/property'],
             node: ['./lib/expect', '../modelo/modelo.js', '../modelo/property.js'],
             browser: ['expect', 'modelo', 'modelo/property']
         };
