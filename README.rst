@@ -9,11 +9,11 @@ Modelo.js
 Development Plan
 ================
 
-Pass 1 *(Current Pass)*
+Pass 1 **(Complete)**
 
     Initial implementation of object definition and property validation API's.
 
-Pass 2
+Pass 2 *(Current Pass)*
 
     Synchronous relationship API. (1-1, 1-N, N-N)
 
