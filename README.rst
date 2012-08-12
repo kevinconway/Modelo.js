@@ -345,31 +345,6 @@ Options Reference:
 
         The maximum value for an acceptable number.
 
-array
-^^^^^
-
-Example Call: Modelo.property("array") or Modelo.property("list")
-
-Options Reference:
-
-    -   nullable
-
-        A `true` or `false` indicator of whether or not `null` is an acceptable
-        value for this property.
-
-    -   min_length
-
-        The minimum number of elements for an acceptable array.
-
-    -   max_length
-
-        The maximum number of elements for an acceptable array.
-
-    -   content_type
-
-        A Modelo.property that should be used to validate the contents of the
-        array.
-
 Setup Instructions
 ==================
 
