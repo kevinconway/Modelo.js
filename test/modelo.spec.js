@@ -108,6 +108,56 @@
 
             });
 
+            it('can recognize inhertied objects', function () {
+
+                var Person,
+                    Talker,
+                    Walker,
+                    Customer,
+                    test_customer;
+
+                Person = modelo.define(function (options) {
+                    this.name = options.name || 'Juan Pérez';
+                });
+
+                Person.prototype.hello = function () {
+                    return "Hello " + this.name + "!";
+                };
+
+                Talker = modelo.define(function (options) {
+                    this.language = options.language || 'ES';
+                });
+
+                Talker.prototype.speak = function () {
+                    if (this.language === 'EN') {
+                        return "Hello.";
+                    } else if (this.language === 'ES') {
+                        return "Hola.";
+                    } else {
+                        return "...";
+                    }
+                };
+
+                Walker = modelo.define(function (options) {
+                    this.legs = options.legs || 2;
+                });
+
+                Walker.prototype.walk = function () {
+                    return "These " + this.legs + " boots were made for walkin'.";
+                };
+
+                Customer = modelo.define(Person, Talker, Walker);
+
+                test_customer = new Customer();
+
+                expect(test_customer.isInstance(Customer)).to.be(true);
+                expect(test_customer.isInstance(Person)).to.be(true);
+                expect(test_customer.isInstance(Talker)).to.be(true);
+                expect(test_customer.isInstance(Walker)).to.be(true);
+                expect(test_customer.isInstance(function () {})).to.be(false);
+
+            });
+
         });
 
     });

@@ -63,6 +63,29 @@
 
             };
 
+            Modelo.prototype.isInstance = function (f) {
+
+                var x;
+
+                if (f === Modelo) {
+                    return true;
+                }
+
+                // This args variable references the args
+                // passed into the Modelo definition. In
+                // other words, it is a list of all
+                // constructors used in the creation of
+                // this Modelo.
+                for (x = 0; x < args.length; x = x + 1) {
+                    if (f === args[x]) {
+                        return true;
+                    }
+                }
+
+                return false;
+
+            };
+
             return Modelo;
 
         };
