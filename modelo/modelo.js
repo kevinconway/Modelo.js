@@ -80,6 +80,11 @@
                     if (f === args[x]) {
                         return true;
                     }
+
+                    if (!!args[x].prototype.isInstance &&
+                        args[x].prototype.isInstance(f)) {
+                        return true;
+                    }
                 }
 
                 return false;

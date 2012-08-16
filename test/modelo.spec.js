@@ -114,7 +114,10 @@
                     Talker,
                     Walker,
                     Customer,
-                    test_customer;
+                    Empty_Mixin,
+                    Extended_Customer,
+                    test_customer,
+                    extended_test_customer;
 
                 Person = modelo.define(function (options) {
                     this.name = options.name || 'Juan Pérez';
@@ -148,13 +151,25 @@
 
                 Customer = modelo.define(Person, Talker, Walker);
 
+                Empty_Mixin = modelo.define();
+
+                Extended_Customer = Customer.extend(Empty_Mixin);
+
                 test_customer = new Customer();
+                extended_test_customer = new Extended_Customer();
 
                 expect(test_customer.isInstance(Customer)).to.be(true);
                 expect(test_customer.isInstance(Person)).to.be(true);
                 expect(test_customer.isInstance(Talker)).to.be(true);
                 expect(test_customer.isInstance(Walker)).to.be(true);
                 expect(test_customer.isInstance(function () {})).to.be(false);
+
+                expect(extended_test_customer.isInstance(Customer)).to.be(true);
+                expect(extended_test_customer.isInstance(Empty_Mixin)).to.be(true);
+                expect(extended_test_customer.isInstance(Person)).to.be(true);
+                expect(extended_test_customer.isInstance(Walker)).to.be(true);
+                expect(extended_test_customer.isInstance(Talker)).to.be(true);
+                expect(extended_test_customer.isInstance(function () {})).to.be(false);
 
             });
 
