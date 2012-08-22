@@ -41,6 +41,30 @@ Pass 8
 
     Cross platform persistence layers. (Memory)
 
+Pass 9
+
+    Finalize synchronous API specifications.
+
+Pass 10
+
+    Finalize asynchronous API specifications.
+
+Pass 11
+
+    Refactor for specification compliance.
+
+Pass 12
+
+    Expand code comment documentation.
+
+Pass 13
+
+    Expand usage documentation.
+
+Pass 14
+
+    Package for NPM.
+
 Usage Examples
 ==============
 
