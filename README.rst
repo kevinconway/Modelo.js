@@ -13,11 +13,11 @@ Pass 1 **(Complete)**
 
     Initial implementation of object definition and property validation API's.
 
-Pass 2 *(Current Pass)*
+Pass 2 **(Complete)**
 
     Synchronous relationship API. (1-1, 1-N, N-N)
 
-Pass 3
+Pass 3 *(Current Pass)*
 
     Synchronous event handling for objects, properties, and relationships.
 
