@@ -9,7 +9,7 @@
         deps = {
             amd: ['lib/expect', '../modelo/modelo', '../modelo/event'],
             node: ['./lib/expect', '../modelo/modelo.js', '../modelo/event.js'],
-            browser: ['expect', 'modelo', 'modelo/event']
+            browser: ['expect', 'modelo', 'modelo/Event']
         };
 
     def.call(this, 'spec/modelo', deps[env], function (expect, modelo, EventMixin) {
