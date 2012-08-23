@@ -17,11 +17,11 @@ Pass 2 **(Complete)**
 
     Synchronous relationship API. (1-1, 1-N, N-N)
 
-Pass 3 *(Current Pass)*
+Pass 3 **(Complete)**
 
     Synchronous event handling for objects, properties, and relationships.
 
-Pass 4
+Pass 4 *(Current Pass)*
 
     Cross platform asynchronous support.
 
