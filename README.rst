@@ -25,11 +25,11 @@ Pass 4 **(Complete)**
 
     Cross platform asynchronous support.
 
-Pass 5
+Pass 5 **(Complete)**
 
     Asynchronous event handling.
 
-Pass 6
+Pass 6 *(Current Pass)*
 
     Refactor deferred for event support.
 
