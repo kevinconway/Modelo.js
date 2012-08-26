@@ -19,19 +19,19 @@ Pass 2 **(Complete)**
 
 Pass 3 **(Complete)**
 
-    Synchronous event handling for objects, properties, and relationships.
+    Synchronous event handling.
 
-Pass 4 *(Current Pass)*
+Pass 4 **(Complete)**
 
     Cross platform asynchronous support.
 
 Pass 5
 
-    Asynchronous relationship API.
+    Asynchronous event handling.
 
 Pass 6
 
-    Asynchronous event handling for objects, properties, and relationships.
+    Refactor deferred for event support.
 
 Pass 7
 
@@ -39,29 +39,17 @@ Pass 7
 
 Pass 8
 
-    Cross platform persistence layers. (Memory)
+    Refactor relationship API for persistence layer support.
 
 Pass 9
 
-    Finalize synchronous API specifications.
+    Expand code comment documentation.
 
 Pass 10
 
-    Finalize asynchronous API specifications.
-
-Pass 11
-
-    Refactor for specification compliance.
-
-Pass 12
-
-    Expand code comment documentation.
-
-Pass 13
-
     Expand usage documentation.
 
-Pass 14
+Pass 11
 
     Package for NPM.
 
