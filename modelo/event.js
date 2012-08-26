@@ -7,12 +7,12 @@
     var env = factory.env,
         def = factory.def,
         deps = {
-            amd: ['./modelo.js'],
-            node: ['./modelo.js'],
-            browser: ['modelo']
+            amd: ['./modelo.js', './defer.js'],
+            node: ['./modelo.js', './defer.js'],
+            browser: ['modelo', 'modelo/defer']
         };
 
-    def.call(this, 'modelo/Event', deps[env], function (modelo) {
+    def.call(this, 'modelo/Event', deps[env], function (modelo, defer) {
 
         var EventMixin, emptyCallback, emptyContext;
 
@@ -27,7 +27,10 @@
 
         EventMixin.prototype.on = function (event, callback, context) {
 
-            callback = callback || emptyCallback;
+            if (typeof callback !== "function") {
+                return this;
+            }
+
             context = context || emptyContext;
 
             this.events[event] = this.events[event] || [];
@@ -43,23 +46,56 @@
 
         EventMixin.prototype.off = function (event, callback, context) {
 
-            var x;
+            var x,
+                newEvents = [];
 
-            callback = callback || emptyCallback;
-            context = context || emptyContext;
+            if (callback === undefined &&
+                context === undefined &&
+                event === undefined) {
 
-            this.events[event] = this.events[event] || [];
+                this.events = {};
+                return this;
+
+            }
+
+            if (callback === undefined && context === undefined) {
+
+                this.events[event].splice(0, this.events[event].length);
+                return this;
+
+            }
+
+            if (context === undefined) {
+
+                for (x = 0; x < this.events[event].length; x = x + 1) {
+
+                    if (this.events[event][x].callback !== callback) {
+
+                        newEvents.push(this.events[event][x]);
+
+                    }
+
+                }
+
+                this.events[event].splice(0, this.events[event].length);
+                this.events = newEvents;
+                return this;
+
+            }
 
             for (x = 0; x < this.events[event].length; x = x + 1) {
 
-                if (this.events[event][x].callback === callback &&
-                    this.events[event][x].context === context) {
+                if (this.events[event][x].callback !== callback &&
+                    this.events[event][x].context !== context) {
 
-                    this.events[event].splice(x, 1);
+                    newEvents.push(this.events[event][x]);
 
                 }
 
             }
+
+            this.events[event].splice(0, this.events[event].length);
+            this.events[event] = newEvents;
 
             return this;
 
@@ -69,7 +105,20 @@
 
             var x,
                 callback,
-                context;
+                context,
+                callWIthContext;
+
+            callWIthContext = function (fn, ctx) {
+
+                return function () {
+
+                    fn.call(ctx);
+
+                };
+
+            };
+
+            this.events[event] = this.events[event] || [];
 
             for (x = 0; x < this.events[event].length; x = x + 1) {
 
@@ -78,7 +127,7 @@
 
                 if (typeof callback === "function") {
 
-                    callback.call(context);
+                    defer(callWIthContext(callback, context));
 
                 }
 

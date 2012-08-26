@@ -22,29 +22,51 @@
 
             });
 
-            it('registers and triggers events', function () {
+            it('registers and triggers events', function (done) {
 
                 var t = new EventMixin(),
                     test_value = {};
 
                 t.on('test', function () {
                     test_value.test = true;
+                    expect(test_value.test).to.be(true);
+                    done();
                 });
 
                 expect(test_value.test).to.be(undefined);
 
                 t.trigger('test');
 
-                expect(test_value.test).to.be(true);
+                expect(test_value.test).to.be(undefined);
 
             });
 
-            it('removes events', function () {
+            it('removes events', function (done) {
 
                 var t = new EventMixin(),
                     test_value = {},
                     callback = function () {
                         test_value.test = true;
+                        expect(test_value.test).to.be(true);
+
+                        t.off('test', callback);
+
+                        expect(test_value.test).to.be(true);
+
+                        test_value.test = false;
+
+                        expect(test_value.test).to.be(false);
+
+                        t.on('test', function () {
+
+                            expect(test_value.test).to.be(false);
+
+                            done();
+
+                        });
+
+                        t.trigger('test');
+
                     };
 
                 t.on('test', callback);
@@ -53,15 +75,7 @@
 
                 t.trigger('test');
 
-                expect(test_value.test).to.be(true);
-
-                t.off('test', callback);
-
-                test_value.test = false;
-
-                t.trigger('test');
-
-                expect(test_value.test).to.be(false);
+                expect(test_value.test).to.be(undefined);
 
             });
 
