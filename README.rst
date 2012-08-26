@@ -29,11 +29,11 @@ Pass 5 **(Complete)**
 
     Asynchronous event handling.
 
-Pass 6 *(Current Pass)*
+Pass 6 **(Complete)**
 
     Refactor deferred for event support.
 
-Pass 7
+Pass 7 *(Current Pass)*
 
     Persistence layer API specification.
 
