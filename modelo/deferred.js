@@ -7,12 +7,12 @@
     var env = factory.env,
         def = factory.def,
         deps = {
-            amd: ['./modelo.js', './defer.js'],
-            node: ['./modelo.js', './defer.js'],
-            browser: ['modelo', 'modelo/defer']
+            amd: ['./event.js', './defer.js'],
+            node: ['./event.js', './defer.js'],
+            browser: ['modelo/Event', 'modelo/defer']
         };
 
-    def.call(this, 'modelo/Deferred', deps[env], function (modelo, defer) {
+    def.call(this, 'modelo/Deferred', deps[env], function (Event, defer) {
 
         var Deferred,
             DeferredObject,
@@ -28,7 +28,7 @@
 
             };
 
-        DeferredObject = modelo.define(function (options) {
+        DeferredObject = Event.extend(function (options) {
 
             this.callbacks = [];
             this.errbacks = [];
@@ -94,6 +94,11 @@
 
             }
 
+            this.trigger('success').trigger('done');
+            this.trigger('complete');
+
+            return this;
+
         };
 
         DeferredObject.prototype.fail = function (value) {
@@ -114,6 +119,11 @@
 
             }
 
+            this.trigger('fail').trigger('failure').trigger('error');
+            this.trigger('complete');
+
+            return this;
+
         };
 
         DeferredObject.prototype.promise = function () {
@@ -123,12 +133,14 @@
 
             promise.callback = function (fn) {
                 thisDeferred.callback(fn);
+                return this;
             };
             promise.done = promise.callback;
             promise.succeess = promise.callback;
 
             promise.errback = function (fn) {
                 thisDeferred.errback(fn);
+                return this;
             };
             promise.failure = promise.errback;
             promise.error = promise.errback;
