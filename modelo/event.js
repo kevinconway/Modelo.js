@@ -44,6 +44,9 @@
 
         };
 
+        EventMixin.prototype.bind = EventMixin.prototype.on;
+
+
         EventMixin.prototype.off = function (event, callback, context) {
 
             var x,
@@ -101,6 +104,9 @@
 
         };
 
+        EventMixin.prototype.unbind = EventMixin.prototype.off;
+
+
         EventMixin.prototype.trigger = function (event) {
 
             var x,
@@ -136,6 +142,8 @@
             return this;
 
         };
+
+        EventMixin.prototype.fire = EventMixin.prototype.trigger;
 
         // Define and return the module.
         return EventMixin;
