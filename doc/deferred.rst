@@ -45,7 +45,7 @@ for use of this library and is used here only for demonstration purposes.
 
     function getRSS() {
 
-        var deferred = new modelo.deferred.Deferred();
+        var deferred = new modelo.deferred.Deferred(); // new keyword optional
 
         $.ajax({
             url: "myrss.com",

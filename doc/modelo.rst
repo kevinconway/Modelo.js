@@ -26,7 +26,7 @@ Creating a basic Modelo object is simple::
 
 Now the `Person` variable contains an object constructor that can be used
 as though it were any other JavaScript constructor. Prototype attributes can
-be added and instances can be created with the `new` keyword::
+be added and instances can be created with or without the `new` keyword::
 
     Var Person, myPerson;
 
@@ -39,6 +39,10 @@ be added and instances can be created with the `new` keyword::
     }
 
     myPerson = new Person();
+    myPerson.log("I'm just a plain old JavaScript object.")
+    // Console Output: "I'm just a plain old JavaScript object."
+
+    myPerson = Person();
     myPerson.log("I'm just a plain old JavaScript object.")
     // Console Output: "I'm just a plain old JavaScript object."
 
