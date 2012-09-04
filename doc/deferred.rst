@@ -136,6 +136,30 @@ promises as illustrated above.
 API Reference
 =============
 
+Exports
+-------
+
+The deferred.js library exports several objects. The primary object exported
+is a function that returns a new Deferred object when called (`new` keyword
+optional). Attached to this object are the Deferred, Promise, and Promise
+Collection objects. In Node.js and AMD environments, this library can be
+required::
+
+    var deferred = require('deferred');
+
+    typeof deferred === "function"; // true
+
+    typeof deferred.Deferred === "function"; // true
+
+    typeof deferred.Promise === "function"; // true
+
+    typeof deferred.PromiseCollection === "function"; // true
+
+In a browser environment, the deferred library will load in the global `modelo`
+object under `modelo.deferred`::
+
+    typeof modelo.deferred === "function"; // true
+
 Deferred
 --------
 

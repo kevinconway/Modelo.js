@@ -135,6 +135,25 @@ var Person, myPerson;
 API Reference
 =============
 
+Exports
+-------
+
+The property.js library exports multiple objects. The primary export is a
+function that generates property objects. Attached to this object are the
+prepackaged validation functions. In Nod.js and AMD environments the library
+can be required::
+
+    var property = require('property');
+
+    typeof property === "function"; // true
+
+    typeof property.nullable === "function"; // true
+
+In a browser environment, the property library will be loaded in the global
+`modelo` object under `modelo.property`::
+
+    typeof modelo.property === "function"; // true
+
 property([type, [validation, ...]])
 ----------------------------------------------
 

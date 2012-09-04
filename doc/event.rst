@@ -103,6 +103,22 @@ the Event object handles unregistering events.
 API Reference
 =============
 
+Exports
+-------
+
+This module exports a single modelo objects that can be used as is, extended
+directly, or mixed into other modelo objects. In a Node.js or AMD environment
+the object can simply be required::
+
+    var Event = require('event');
+
+    typeof Event.extend === "function"; // true
+
+In a browser environment, the `Event` object is made available under the
+global `modelo` object at `modelo.Event`::
+
+    typeof modelo.Event.extend === "function"; // true
+
 All instances of object inheriting from the Event object gain a standard set
 of event handling functionality.
 

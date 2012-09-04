@@ -251,6 +251,24 @@ trivial example::
 API Reference
 =============
 
+Exports
+-------
+
+The modelo.js library exports a function that generates modelo objects. A proxy
+for this function has been created as the root export for ease of use::
+
+    var modelo = require('modelo');
+
+    typeof modelo === "function"; // true
+
+    typeof modelo.define === "function"; // true
+
+In a browser, the modelo.js library is loaded in the global `modelo` object::
+
+    typeof modelo === "function"; // true
+
+    typeof modelo.define === "function"; // true
+
 define()
 --------
 
