@@ -33,11 +33,11 @@ Pass 6 **(Complete)**
 
     Refactor deferred for event support.
 
-Pass 7 *(Current Pass)*
+Pass 7 **(Complete)**
 
-    Finalize usage guides and API specifications for all libraries.
+    Add usage guides and API specifications for all libraries.
 
-Pass 8
+Pass 8 *(Current Pass)*
 
     Update all tests to match new specifications.
 
@@ -50,6 +50,18 @@ Pass 10
     Expand code comment documentation.
 
 Pass 11
+
+    Add usage guide and API specifications for persistent storage library.
+
+Pass 12
+
+    Add tests for persistent storage engine library.
+
+Pass 13
+
+    Add persistent storage engine library.
+
+Pass 14
 
     Package for NPM.
 
