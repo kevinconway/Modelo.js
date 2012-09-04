@@ -22,6 +22,12 @@
 
             });
 
+            it('exposes a specification compliant interface', function () {
+
+                expect(typeof defer).to.be("function");
+
+            });
+
             it('triggers async execution of functions', function (done) {
 
                 var test_object = {};
