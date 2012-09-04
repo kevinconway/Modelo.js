@@ -22,6 +22,14 @@
 
             });
 
+            it('exposes a specification compliant interface', function () {
+
+                expect(typeof EventMixin).to.be("function");
+
+                expect(typeof EventMixin.extend).to.be("function");
+
+            });
+
             it('registers and triggers events', function (done) {
 
                 var t = new EventMixin(),
