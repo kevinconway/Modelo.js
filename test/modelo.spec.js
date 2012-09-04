@@ -22,9 +22,32 @@
 
             });
 
+            it('exports a specification compliant interface', function () {
+
+                expect(typeof modelo).to.be("function");
+
+                expect(typeof modelo.define).to.be("function");
+
+            });
+
             it('supports the basic style of object definition', function () {
 
                 var T = modelo.define(),
+                    i = new T();
+
+                expect(T).to.be.ok();
+
+                expect(T).to.be.a('function');
+
+                expect(T.extend).to.be.a('function');
+
+                expect(i).to.be.a(T);
+
+            });
+
+            it('optionally supports the new keyword', function () {
+
+                var T = new modelo(),
                     i = new T();
 
                 expect(T).to.be.ok();
