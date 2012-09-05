@@ -156,9 +156,9 @@ required::
     typeof deferred.PromiseCollection === "function"; // true
 
 In a browser environment, the deferred library will load in the global `modelo`
-object under `modelo.deferred`::
+object under `modelo.Deferred`::
 
-    typeof modelo.deferred === "function"; // true
+    typeof modelo.Deferred === "function"; // true
 
 Deferred
 --------

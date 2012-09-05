@@ -22,6 +22,18 @@
 
             });
 
+            it('exposes a specification compliant interface', function () {
+
+                expect(typeof Deferred).to.be("function");
+
+                expect(typeof Deferred.Deferred).to.be("function");
+
+                expect(typeof Deferred.Promise).to.be("function");
+
+                expect(typeof Deferred.PromiseCollection).to.be("function");
+
+            });
+
             it('handles async callbacks', function (done) {
 
                 var t = new Deferred(),
@@ -95,6 +107,31 @@
                 expect(successObject.test).to.be(undefined);
 
                 t.resolve();
+
+            });
+
+            it('produces promise collections', function (done) {
+
+                var d1 = new Deferred(),
+                    d2 = new Deferred(),
+                    d3 = new Deferred(),
+                    t1 = d1.promise(),
+                    t2 = d2.promise(),
+                    t3 = d3.promise(),
+                    c1 = new Deferred.PromiseCollection();
+
+                c1.add("t1", t1).add("t2", t2).add("t3", t3);
+
+                c1.callback(function (values) {
+                    expect(values.t1).to.be(1);
+                    expect(values.t2).to.be(2);
+                    expect(values.t3).to.be(3);
+                    done();
+                });
+
+                d1.resolve(1);
+                d2.resolve(2);
+                d3.resolve(3);
 
             });
 
