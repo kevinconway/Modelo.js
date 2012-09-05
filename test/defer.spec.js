@@ -9,10 +9,10 @@
         deps = {
             amd: ['lib/expect', '../modelo/defer'],
             node: ['./lib/expect', '../modelo/defer.js'],
-            browser: ['expect', 'modelo/defer']
+            browser: ['expect', 'Modelo/defer']
         };
 
-    def.call(this, 'spec/modelo', deps[env], function (expect, defer) {
+    def.call(this, 'spec/Modelo/defer', deps[env], function (expect, defer) {
 
         describe('The Defer library', function () {
 

@@ -12,7 +12,7 @@
             browser: []
         };
 
-    def.call(this, 'modelo/defer', deps[env], function () {
+    def.call(this, 'Modelo/defer', deps[env], function () {
 
         var defer;
 
