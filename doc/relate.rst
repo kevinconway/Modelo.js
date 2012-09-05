@@ -44,7 +44,7 @@ parameter to enforce a NOT NULL constraint.
 Has Many
 --------
 
-var Person, myPerson, myFriend;
+    var Person, myPerson, myFriend;
 
     Person = Modelo.define(function (options) {
 
@@ -61,7 +61,7 @@ var Person, myPerson, myFriend;
 
     myPerson.friends(); // [myFriend]
 
-    myPerson.friends.remove(myFreind);
+    myPerson.friends.remove(myFriend);
 
     myPerson.friends(); // []
 

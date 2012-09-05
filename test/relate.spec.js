@@ -12,77 +12,62 @@
             browser: ['expect', 'modelo', 'modelo/relate']
         };
 
-    def.call(this, 'spec/modelo', deps[env], function (expect, modelo, relate) {
+    def.call(this, 'spec/modelo', deps[env], function (expect, modelo, relationship) {
 
         describe('The Relate library', function () {
 
             it('loads in the current environment (' + env + ')', function () {
 
-                expect(relate).to.be.ok();
+                expect(relationship).to.be.ok();
 
             });
 
             it('generates hasOne relationships', function () {
 
-                var T = modelo.define(),
-                    Q = modelo.define(),
-                    w;
+                var Person, myPerson, myBestFriend;
 
-                T = relate(T, "hasOne", Q, "relationship");
+                Person = modelo.define(function (options) {
 
-                expect(T).to.be.ok();
+                    this.best_friend = new relationship("hasone", Person);
 
-                w = new T();
+                });
 
-                expect(w).to.be.ok();
-                expect(w.relationship).to.be.ok();
-                expect(w.isInstance(T)).to.be(true);
+                myPerson = new Person();
+                myBestFriend = new Person();
 
-                expect(w.relationship()).to.be(null);
+                expect(myPerson.best_friend()).to.be(undefined);
 
-                expect(function () {
-                    w.relationship({});
-                }).to.throwError();
+                myPerson.best_friend(myBestFriend);
+                expect(myPerson.best_friend()).to.be(myBestFriend);
 
-                expect(function () {
-                    w.relationship(new Q());
-                }).to.not.throwError();
-
-                expect(w.relationship()).to.be.ok();
-                expect(w.relationship().isInstance(Q)).to.be(true);
+                myPerson.best_friend(null);
+                expect(myPerson.best_friend()).to.be(null);
 
             });
 
             it('generates hasMany relationships', function () {
 
-                var T = modelo.define(),
-                    Q = modelo.define(),
-                    w;
+                var Person, myPerson, myFriend;
 
-                T = relate(T, "hasMany", Q, "relationship");
+                Person = modelo.define(function (options) {
 
-                expect(T).to.be.ok();
+                    this.friends = new relationship("hasmany", Person);
 
-                w = new T();
+                });
 
-                expect(w).to.be.ok();
-                expect(w.relationship).to.be.ok();
-                expect(w.isInstance(T)).to.be(true);
+                myPerson = new Person();
+                myFriend = new Person();
 
-                expect(w.relationship()).to.be.ok();
-                expect(w.relationship().length).to.be(0);
+                expect(myPerson.friends().length).to.be(0);
 
-                expect(function () {
-                    w.relationship.add({});
-                }).to.throwError();
+                myPerson.friends.add(myFriend);
 
-                expect(function () {
-                    w.relationship.add(new Q());
-                }).to.not.throwError();
+                expect(myPerson.friends().length).to.be(1);
+                expect(myPerson.friends()[1]).to.be(myFriend);
 
-                expect(w.relationship()).to.be.ok();
-                expect(w.relationship().length).to.be(1);
-                expect(w.relationship()[0].isInstance(Q)).to.be(true);
+                myPerson.friends.remove(myFriend);
+
+                expect(myPerson.friends().length).to.be(0);
 
             });
 
