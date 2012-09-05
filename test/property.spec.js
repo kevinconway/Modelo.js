@@ -26,7 +26,7 @@
 
                 var T = modelo.define(function (options) {
                     this.name = property();
-                    this.age = property();
+                    this.age = new property();
                 }),
                 i = new T();
 
@@ -87,11 +87,10 @@
 
                 // Test length validations
                 T = modelo.define(function (options) {
-                    this.name = property("string", {
-                        nullable: false,
-                        min_length: 2,
-                        max_length: 3
-                    });
+                    this.name = property("string",
+                                        property.nullable(false),
+                                        property.max_length(3),
+                                        property.min_length(2));
                 });
                 i = new T();
 
@@ -138,9 +137,8 @@
 
                 // Test not null validation
                 T = modelo.define(function (options) {
-                    this.bool = property("boolean", {
-                        nullable: false
-                    });
+                    this.bool = property("boolean",
+                                        property.nullable(false));
                 });
                 i = new T();
 
@@ -200,11 +198,10 @@
 
                 // Test value validations
                 T = modelo.define(function (options) {
-                    this.num = property("number", {
-                        nullable: false,
-                        min_value: 2,
-                        max_value: 3
-                    });
+                    this.num = property("number",
+                                        property.nullable(false),
+                                        property.min_value(2),
+                                        property.max_value(3));
                 });
                 i = new T();
 
