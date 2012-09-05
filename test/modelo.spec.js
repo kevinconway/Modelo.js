@@ -9,30 +9,30 @@
         deps = {
             amd: ['lib/expect', '../modelo/modelo.js'],
             node: ['./lib/expect', '../modelo/modelo.js'],
-            browser: ['expect', 'modelo']
+            browser: ['expect', 'Modelo']
         };
 
-    def.call(this, 'spec/modelo', deps[env], function (expect, modelo) {
+    def.call(this, 'spec/Modelo', deps[env], function (expect, Modelo) {
 
         describe('The Modelo library', function () {
 
             it('loads in the current environment (' + env + ')', function () {
 
-                expect(modelo).to.be.ok();
+                expect(Modelo).to.be.ok();
 
             });
 
             it('exports a specification compliant interface', function () {
 
-                expect(typeof modelo).to.be("function");
+                expect(typeof Modelo).to.be("function");
 
-                expect(typeof modelo.define).to.be("function");
+                expect(typeof Modelo.define).to.be("function");
 
             });
 
             it('supports the basic style of object definition', function () {
 
-                var T = modelo.define(),
+                var T = Modelo.define(),
                     i = new T();
 
                 expect(T).to.be.ok();
@@ -47,7 +47,7 @@
 
             it('optionally supports the new keyword', function () {
 
-                var T = new modelo(),
+                var T = new Modelo(),
                     i = new T();
 
                 expect(T).to.be.ok();
@@ -62,7 +62,7 @@
 
             it('supports the constructor style of object definition', function () {
 
-                var T = modelo.define(function (options) {
+                var T = Modelo.define(function (options) {
                     this.name = options.name || 'Juan Pérez';
                 }),
                     i = new T();
@@ -85,7 +85,7 @@
                     Customer,
                     test_customer;
 
-                Person = modelo.define(function (options) {
+                Person = Modelo.define(function (options) {
                     this.name = options.name || 'Juan Pérez';
                 });
 
@@ -93,7 +93,7 @@
                     return "Hello " + this.name + "!";
                 };
 
-                Talker = modelo.define(function (options) {
+                Talker = Modelo.define(function (options) {
                     this.language = options.language || 'ES';
                 });
 
@@ -107,7 +107,7 @@
                     }
                 };
 
-                Walker = modelo.define(function (options) {
+                Walker = Modelo.define(function (options) {
                     this.legs = options.legs || 2;
                 });
 
@@ -115,7 +115,7 @@
                     return "These " + this.legs + " boots were made for walkin'.";
                 };
 
-                Customer = modelo.define(Person, Talker, Walker);
+                Customer = Modelo.define(Person, Talker, Walker);
 
                 expect(Customer.prototype.hello).to.be.a('function');
                 expect(Customer.prototype.speak).to.be.a('function');
@@ -142,7 +142,7 @@
                     test_customer,
                     extended_test_customer;
 
-                Person = modelo.define(function (options) {
+                Person = Modelo.define(function (options) {
                     this.name = options.name || 'Juan Pérez';
                 });
 
@@ -150,7 +150,7 @@
                     return "Hello " + this.name + "!";
                 };
 
-                Talker = modelo.define(function (options) {
+                Talker = Modelo.define(function (options) {
                     this.language = options.language || 'ES';
                 });
 
@@ -164,7 +164,7 @@
                     }
                 };
 
-                Walker = modelo.define(function (options) {
+                Walker = Modelo.define(function (options) {
                     this.legs = options.legs || 2;
                 });
 
@@ -172,9 +172,9 @@
                     return "These " + this.legs + " boots were made for walkin'.";
                 };
 
-                Customer = modelo.define(Person, Talker, Walker);
+                Customer = Modelo.define(Person, Talker, Walker);
 
-                Empty_Mixin = modelo.define();
+                Empty_Mixin = Modelo.define();
 
                 Extended_Customer = Customer.extend(Empty_Mixin);
 

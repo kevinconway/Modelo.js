@@ -12,7 +12,7 @@
             browser: []
         };
 
-    def.call(this, 'modelo', deps[env], function () {
+    def.call(this, 'Modelo', deps[env], function () {
 
         var define;
 
@@ -95,10 +95,15 @@
 
         };
 
+        // Specification calls for allowing the following:
+        //
+        // new Modelo();
+        // Modelo();
+        // Modelo.define();
+        define.define = define;
+
         // Define and return the module.
-        return {
-            "define": define
-        };
+        return define;
 
     });
 
