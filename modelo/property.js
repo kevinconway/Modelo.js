@@ -7,467 +7,222 @@
     var env = factory.env,
         def = factory.def,
         deps = {
-            amd: [],
-            node: [],
-            browser: []
+            amd: ['./modelo.js'],
+            node: ['./modelo.js'],
+            browser: ['Modelo']
         };
 
-    def.call(this, 'modelo/property', deps[env], function () {
+    def.call(this, 'Modelo/Property', deps[env], function (Modelo) {
 
-        var property;
+        var Property, PropertyObject;
 
-        // Wrap in submodule to allow for better memory use. In this format
-        // property generators can exist in a common scope to avoid being
-        // redefined on each call to Modelo.property().
-        property = (function () {
-            var undefined_prop,
-                string_prop,
-                bool_prop,
-                number_prop,
-                array_prop,
-                validate;
+        PropertyObject = new Modelo(function (options) {
+            this.value = options.value || undefined;
+        });
 
-            // This object literal contains all of the built-in property
-            // validation functions that can be used by the properties
-            // defined below.
-            validate = {
-                min_length: function (len) {
+        PropertyObject.prototype.get = function () {
+            return this.value;
+        };
 
-                    return function (val) {
+        PropertyObject.prototype.set = function (val) {
+            this.value = val;
+        };
 
-                        if (String(val).length < len) {
+        Property = function () {
 
-                            return {
+            var args = Array.prototype.slice.call(arguments),
+                type = "undefined",
+                typeValidator,
+                Prop;
 
-                                valid: false,
+            if (args.length > 0 && typeof args[0] === "string") {
+                type = args.shift();
+            }
 
-                                message: "Value must be more than " +
-                                            String(len) +
-                                            " characters long."
+            switch (type) {
 
-                            };
+            case "undefined":
+                typeValidator = function (value) {
+                    return true;
+                };
+                break;
 
-                        }
-
-                        return true;
-
+            case "string":
+                typeValidator = function (value) {
+                    return {
+                        valid: typeof value === "string" ||
+                                value === null ||
+                                isNaN(value),
+                        message: "Value must be a string."
                     };
+                };
+                break;
 
-                },
-
-                max_length: function (len) {
-
-                    return function (val) {
-
-                        if (String(val).length > len) {
-
-                            return {
-
-                                valid: false,
-
-                                message: "Value must be less than " +
-                                            String(len) +
-                                            " characters long."
-
-                            };
-
-                        }
-
-                        return true;
-
+            case "number":
+                typeValidator = function (value) {
+                    return {
+                        valid: typeof value === "number" ||
+                                value === null ||
+                                isNaN(value),
+                        message: "Value must be a number."
                     };
+                };
+                break;
 
-                },
-
-                not_null: function () {
-
-                    return function (val) {
-
-                        if (val === undefined || val === null || isNaN(val)) {
-
-                            return {
-                                valid: false,
-                                message: "Value cannot be null."
-                            };
-
-                        }
-
-                        return true;
+            case "boolean":
+                typeValidator = function (value) {
+                    return {
+                        valid: typeof value === "boolean" ||
+                                value === null ||
+                                isNaN(value),
+                        message: "Value must be a boolean."
                     };
-                },
+                };
+                break;
+            }
 
-                min_value: function (v) {
+            args.splice(0, 0, typeValidator);
 
-                    return function (val) {
+            Prop = new PropertyObject();
 
-                        if (val < v) {
+            return function (val) {
 
-                            return {
+                var x, result;
 
-                                valid: false,
+                if (val === undefined) {
+                    return Prop.get();
+                }
+                console.log(args);
+                console.log(type);
+                for (x = 0; x < args.length; x = x + 1) {
 
-                                message: "Value must be more than " +
-                                            String(v) + "."
+                    result = args[x](val);
 
-                            };
+                    if (result === undefined) {
 
-                        }
+                        throw new Error("Validation function did not return a value.");
 
-                        return true;
+                    }
 
-                    };
+                    if (result === false) {
 
-                },
+                        throw new Error("Property validation failed for value: " + val);
 
-                max_value: function (v) {
+                    }
 
-                    return function (val) {
+                    if (result.valid === false) {
 
-                        if (val > v) {
+                        throw new Error(result.message);
 
-                            return {
-
-                                valid: false,
-
-                                message: "Value must be less than " +
-                                            String(v) + "."
-
-                            };
-
-                        }
-
-                        return true;
-
-                    };
+                    }
 
                 }
 
+                Prop.set(val);
+
             };
 
-            // An undefined property is simply an unvalidated property
-            // with a getter and setter interface.
-            undefined_prop = function () {
+        };
 
-                // Place the actual value within a private and
-                // unreachable scope for integrity.
-                var prop = {
-                    value: undefined,
-                    type: "undefined"
-                };
+        Property.nullable = function (n) {
+
+            if (n === false) {
 
                 return function (val) {
 
-                    if (val === undefined) {
+                    return {
 
-                        return prop.value;
+                        valid: val !== null &&
+                                isNaN(val) !== true,
+                        message: "Value cannot be null. (" + val + ")"
 
-                    }
+                    };
 
-                    prop.value = val;
+                };
 
-                    // Add the option for fluid interface by returning
-                    // the current context.
-                    return this;
+            }
+
+            return function (val) {
+                return true;
+            };
+
+        };
+
+        Property.max_length = function (n) {
+
+            n = n || 0;
+
+            return function (val) {
+
+                return {
+
+                    valid: val.length <= n,
+
+                    message: "Value must be at most " + n + " long."
+
                 };
 
             };
 
-            string_prop = function (options, validators) {
+        };
 
-                var prop = {
-                    value: undefined,
-                    type: "string"
-                };
+        Property.min_length = function (n) {
 
-                return function (val) {
+            n = n || 0;
 
-                    var x,
-                        result;
+            return function (val) {
 
-                    if (val === undefined) {
+                return {
 
-                        return prop.value;
+                    valid: val.length >= n,
 
-                    }
-
-                    // Insert length validators as the last checks before
-                    // custom validation functions.
-                    if (options.min_length !== undefined) {
-
-                        validators.splice(0, 0, validate.min_length(options.min_length));
-
-                    }
-
-                    if (options.max_length !== undefined) {
-
-                        validators.splice(0, 0, validate.max_length(options.max_length));
-
-                    }
-
-                    // Insert type checking.
-                    validators.splice(0, 0, function (value) {
-
-                        if (typeof value !== "string" &&
-                            value !== null &&
-                            value !== undefined) {
-                            return {
-                                valid: false,
-                                message: "Value must be a string."
-                            };
-                        }
-
-                        return true;
-
-                    });
-
-                    // Insert check for null before check for type.
-                    if (options.nullable !== undefined &&
-                        options.nullable !== true) {
-
-                        validators.splice(0, 0, validate.not_null());
-
-                    }
-
-                    for (x = 0; x < validators.length; x = x + 1) {
-
-                        result = validators[x].call({}, val);
-
-                        if (result === false) {
-
-                            throw new Error('Validation failed for value ' +
-                                            val + '.');
-
-                        }
-
-                        if (typeof result === 'object' &&
-                            result.valid !== true) {
-
-                            throw new Error(result.message);
-
-                        }
-
-                    }
-
-                    prop.value = val;
-
-                    return this;
+                    message: "Value must be at least " + n + " long."
 
                 };
-
 
             };
 
-            bool_prop = function (options, validators) {
+        };
 
-                var prop = {
-                    value: undefined,
-                    type: "boolean"
-                };
+        Property.max_value = function (n) {
 
-                return function (val) {
+            n = n || 0;
 
-                    var x,
-                        result;
+            return function (val) {
 
-                    if (val === undefined) {
+                return {
 
-                        return prop.value;
+                    valid: val <= n,
 
-                    }
-
-                    // Insert type checking.
-                    validators.splice(0, 0, function (value) {
-
-                        if (typeof value !== "boolean" &&
-                            value !== null &&
-                            value !== undefined) {
-                            return {
-                                valid: false,
-                                message: "Value must be a boolean."
-                            };
-                        }
-
-                        return true;
-
-                    });
-
-                    // Insert check for null before check for type.
-                    if (options.nullable !== undefined &&
-                        options.nullable !== true) {
-
-                        validators.splice(0, 0, validate.not_null());
-
-                    }
-
-                    for (x = 0; x < validators.length; x = x + 1) {
-
-                        result = validators[x].call({}, val);
-
-                        if (result === false) {
-
-                            throw new Error('Validation failed for value ' +
-                                            val + '.');
-
-                        }
-
-                        if (typeof result === 'object' &&
-                            result.valid !== true) {
-
-                            throw new Error(result.message);
-
-                        }
-
-                    }
-
-                    prop.value = val;
-
-                    return this;
+                    message: "Value must be at most " + n + "."
 
                 };
-
 
             };
 
-            number_prop = function (options, validators) {
+        };
 
-                var prop = {
-                    value: undefined,
-                    type: "number"
-                };
+        Property.min_value = function (n) {
 
-                return function (val) {
+            n = n || 0;
 
-                    var x,
-                        result;
+            return function (val) {
 
-                    if (val === undefined) {
+                return {
 
-                        return prop.value;
+                    valid: val >= n,
 
-                    }
-
-                    // Insert length validators as the last checks before
-                    // custom validation functions.
-                    if (options.min_value !== undefined) {
-
-                        validators.splice(0, 0, validate.min_value(options.min_value));
-
-                    }
-
-                    if (options.max_value !== undefined) {
-
-                        validators.splice(0, 0, validate.max_value(options.max_value));
-
-                    }
-
-                    // Insert type checking.
-                    validators.splice(0, 0, function (value) {
-
-                        if (typeof value !== "number" &&
-                            value !== null &&
-                            value !== undefined) {
-                            return {
-                                valid: false,
-                                message: "Value must be a number."
-                            };
-                        }
-
-                        return true;
-
-                    });
-
-                    // Insert check for null before check for type.
-                    if (options.nullable !== undefined &&
-                        options.nullable !== true) {
-
-                        validators.splice(0, 0, validate.not_null());
-
-                    }
-
-                    for (x = 0; x < validators.length; x = x + 1) {
-
-                        result = validators[x].call({}, val);
-
-                        if (result === false) {
-
-                            throw new Error('Validation failed for value ' +
-                                            val + '.');
-
-                        }
-
-                        if (typeof result === 'object' &&
-                            result.valid !== true) {
-
-                            throw new Error(result.message);
-
-                        }
-
-                    }
-
-                    prop.value = val;
-
-                    return this;
+                    message: "Value must be at least " + n + "."
 
                 };
 
-
             };
 
+        };
 
-            return function () {
-                var args = Array.prototype.slice.call(arguments),
-                    type,
-                    options,
-                    validators;
+        Property.define = Property;
 
-                type = "undefined";
-                if (args.length > 0 && typeof args[0] === "string") {
-                    type = args.splice(0, 1)[0];
-                }
-
-                options = {};
-                if (args.length > 0 && typeof args[0] === "object") {
-                    options = args.splice(0, 1)[0];
-                }
-
-                // This list should contain all custom validation functions
-                // provided to the property generator.
-                validators = args;
-
-                switch (type) {
-
-                case 'undefined':
-                    return undefined_prop();
-
-                case 'string':
-                    return string_prop(options, validators);
-
-                case 'bool':
-                    return bool_prop(options, validators);
-
-                case 'boolean':
-                    return bool_prop(options, validators);
-
-                case 'number':
-                    return number_prop(options, validators);
-
-                case 'array':
-                    return array_prop(options, validators);
-
-                case 'list':
-                    return array_prop(options, validators);
-
-                default:
-                    throw new Error('Unrecognized type of ' + type + '.');
-
-                }
-
-            };
-
-        }.call(this));
-
-        // Define and return the module.
-        return property;
+        return Property;
 
     });
 

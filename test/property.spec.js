@@ -9,24 +9,24 @@
         deps = {
             amd: ['lib/expect', '../modelo/modelo', '../modelo/property'],
             node: ['./lib/expect', '../modelo/modelo.js', '../modelo/property.js'],
-            browser: ['expect', 'modelo', 'modelo/property']
+            browser: ['expect', 'Modelo', 'Modelo/Property']
         };
 
-    def.call(this, 'spec/modelo', deps[env], function (expect, modelo, property) {
+    def.call(this, 'spec/Modelo/Property', deps[env], function (expect, Modelo, Property) {
 
         describe('The Property library', function () {
 
             it('loads in the current environment (' + env + ')', function () {
 
-                expect(property).to.be.ok();
+                expect(Property).to.be.ok();
 
             });
 
             it('generates undefined properties', function () {
 
-                var T = modelo.define(function (options) {
-                    this.name = property();
-                    this.age = new property();
+                var T = Modelo.define(function (options) {
+                    this.name = Property.define();
+                    this.age = new Property();
                 }),
                 i = new T();
 
@@ -41,36 +41,29 @@
                 expect(i.name()).to.be('Juan Pérez');
                 expect(i.age()).to.be(43);
 
-                // Test the fluid interface option and check
-                // for the appropriate self references.
-                expect(i.age(43)).to.be(i);
-                expect(i.name('Juan Pérez')).to.be(i);
-
             });
 
             it('generates string properties', function () {
 
-                var T = modelo.define(function (options) {
-                    this.name = property("string");
+                var T = Modelo.define(function (options) {
+                    this.name = new Property("string");
                 }),
                 i = new T();
 
                 // Test default value and nullability.
                 expect(i.name()).to.be(undefined);
+                i.name(null);
                 expect(function () {
                     i.name(null);
                 }).to.not.throwError();
                 expect(i.name()).to.be(null);
 
-                // Test fluid interface option.
-                expect(i.name('Juan Pérez')).to.be(i);
+                i.name('Juan Pérez');
                 expect(i.name()).to.be('Juan Pérez');
 
                 // Test not null validation
-                T = modelo.define(function (options) {
-                    this.name = property("string", {
-                        nullable: false
-                    });
+                T = Modelo.define(function (options) {
+                    this.name = new Property("string", Property.nullable(false));
                 });
                 i = new T();
 
@@ -86,11 +79,11 @@
                 }).to.throwError();
 
                 // Test length validations
-                T = modelo.define(function (options) {
-                    this.name = property("string",
-                                        property.nullable(false),
-                                        property.max_length(3),
-                                        property.min_length(2));
+                T = Modelo.define(function (options) {
+                    this.name = new Property("string",
+                                        Property.nullable(false),
+                                        Property.max_length(3),
+                                        Property.min_length(2));
                 });
                 i = new T();
 
@@ -119,8 +112,8 @@
 
             it('generates boolean properties', function () {
 
-                var T = modelo.define(function (options) {
-                    this.bool = property("boolean");
+                var T = Modelo.define(function (options) {
+                    this.bool = new Property("boolean");
                 }),
                 i = new T();
 
@@ -131,14 +124,16 @@
                 }).to.not.throwError();
                 expect(i.bool()).to.be(null);
 
-                // Test fluid interface option.
-                expect(i.bool(true)).to.be(i);
+                i.bool(true);
                 expect(i.bool()).to.be(true);
 
+                i.bool(false);
+                expect(i.bool()).to.be(false);
+
                 // Test not null validation
-                T = modelo.define(function (options) {
-                    this.bool = property("boolean",
-                                        property.nullable(false));
+                T = Modelo.define(function (options) {
+                    this.bool = new Property("boolean",
+                                        Property.nullable(false));
                 });
                 i = new T();
 
@@ -157,8 +152,8 @@
 
             it('generates number properties', function () {
 
-                var T = modelo.define(function (options) {
-                    this.num = property("number");
+                var T = Modelo.define(function (options) {
+                    this.num = new Property("number");
                 }),
                 i = new T();
 
@@ -169,15 +164,12 @@
                 }).to.not.throwError();
                 expect(i.num()).to.be(null);
 
-                // Test fluid interface option.
-                expect(i.num(123)).to.be(i);
+                i.num(123);
                 expect(i.num()).to.be(123);
 
                 // Test not null validation
-                T = modelo.define(function (options) {
-                    this.num = property("number", {
-                        nullable: false
-                    });
+                T = Modelo.define(function (options) {
+                    this.num = new Property("number", Property.nullable(false));
                 });
                 i = new T();
 
@@ -197,11 +189,11 @@
                 }).to.not.throwError();
 
                 // Test value validations
-                T = modelo.define(function (options) {
-                    this.num = property("number",
-                                        property.nullable(false),
-                                        property.min_value(2),
-                                        property.max_value(3));
+                T = Modelo.define(function (options) {
+                    this.num = new Property("number",
+                                        Property.nullable(false),
+                                        Property.min_value(2),
+                                        Property.max_value(3));
                 });
                 i = new T();
 
