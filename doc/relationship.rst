@@ -1,14 +1,14 @@
-=======================
-Relate.js Documentation
-=======================
+=============================
+Relationship.js Documentation
+=============================
 
 .. contents::
 
 Description
 ===========
 
-The relate.js library exposes an interface for creating relationships between
-modelo objects.
+The relationship.js library exposes an interface for creating relationships
+between Modelo objects.
 
 Usage Examples
 ==============
@@ -16,8 +16,8 @@ Usage Examples
 Has One
 -------
 
-The relate.js library works in a very similar manner to the property.js library.
-Each relationship exposes a getter and setter interface::
+The relationship.js library works in a very similar manner to the property.js
+library. Each relationship exposes a getter and setter interface::
 
     var Person, myPerson, myBestFriend;
 
@@ -71,17 +71,17 @@ API Reference
 Exports
 -------
 
-The relate.js library exports a function that generates relationship properties.
-In Node.js and AMD environments this can be loaded with `require`::
+The relationship.js library exports a function that generates relationship
+properties. In Node.js and AMD environments this can be loaded with `require`::
 
-    var relationship = require('relate');
+    var relationship = require('relationship');
 
     typeof relationship === "function"; // true
 
-In the browser, the relate.js library will load in the global `modelo` object
-under `modelo.relationship`::
+In the browser, the relationship.js library will load in the global `Modelo`
+object under `Modelo.relationship`::
 
-    typeof modelo.relationship === "function"; // true
+    typeof Modelo.relationship === "function"; // true
 
 relationship(type, object[, nullable])
 --------------------------------------

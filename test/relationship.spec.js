@@ -7,28 +7,28 @@
     var env = factory.env,
         def = factory.def,
         deps = {
-            amd: ['lib/expect', '../modelo/modelo', '../modelo/relate'],
-            node: ['./lib/expect', '../modelo/modelo.js', '../modelo/relate.js'],
-            browser: ['expect', 'modelo', 'modelo/relate']
+            amd: ['lib/expect', '../modelo/modelo', '../modelo/Relationship'],
+            node: ['./lib/expect', '../modelo/modelo.js', '../modelo/Relationship.js'],
+            browser: ['expect', 'Modelo', 'Modelo/Relationship']
         };
 
-    def.call(this, 'spec/modelo', deps[env], function (expect, modelo, relationship) {
+    def.call(this, 'spec/Modelo/Relationship', deps[env], function (expect, Modelo, Relationship) {
 
         describe('The Relate library', function () {
 
             it('loads in the current environment (' + env + ')', function () {
 
-                expect(relationship).to.be.ok();
+                expect(Relationship).to.be.ok();
 
             });
 
-            it('generates hasOne relationships', function () {
+            it('generates hasOne Relationships', function () {
 
                 var Person, myPerson, myBestFriend;
 
-                Person = modelo.define(function (options) {
+                Person = Modelo.define(function (options) {
 
-                    this.best_friend = new relationship("hasone", Person);
+                    this.best_friend = new Relationship("hasone", Person);
 
                 });
 
@@ -45,13 +45,13 @@
 
             });
 
-            it('generates hasMany relationships', function () {
+            it('generates hasMany Relationships', function () {
 
                 var Person, myPerson, myFriend;
 
-                Person = modelo.define(function (options) {
+                Person = Modelo.define(function (options) {
 
-                    this.friends = new relationship("hasmany", Person);
+                    this.friends = new Relationship("hasmany", Person);
 
                 });
 
@@ -63,7 +63,7 @@
                 myPerson.friends.add(myFriend);
 
                 expect(myPerson.friends().length).to.be(1);
-                expect(myPerson.friends()[1]).to.be(myFriend);
+                expect(myPerson.friends()[0]).to.be(myFriend);
 
                 myPerson.friends.remove(myFriend);
 

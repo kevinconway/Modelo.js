@@ -7,98 +7,166 @@
     var env = factory.env,
         def = factory.def,
         deps = {
-            amd: [],
-            node: [],
-            browser: []
+            amd: ['./modelo.js'],
+            node: ['./modelo.js'],
+            browser: ['Modelo']
         };
 
-    def.call(this, 'modelo/relate', deps[env], function () {
+    def.call(this, 'Modelo/Relationship', deps[env], function (Modelo) {
 
-        var relate;
-
-        relate = (function () {
-
-            var hasMany,
-                hasOne;
-
-            hasMany = function (parent, child, as) {
-
-                return parent.extend(function (options) {
-
-                    var children = [];
-
-                    this[as] = function () {
-
-                        return children;
-
-                    };
-
-                    this[as].add = function (m) {
-
-                        if (m.isInstance(child)) {
-
-                            children.push(m);
-                            return this;
-
-                        }
-
-                        throw new Error("Invalid modelo.");
-
-                    };
-
-                });
-
-            };
-
-            hasOne = function (parent, child, as) {
+        var Relationship, HasOneRelationship, HasManyRelationship;
 
 
-                return parent.extend(function (options) {
+        HasOneRelationship = Modelo.define(function (options) {
+            this.child = options.child || undefined;
+        });
 
-                    var c = null;
+        HasOneRelationship.prototype.get = function () {
+            return this.child;
+        };
 
-                    this[as] = function (val) {
+        HasOneRelationship.prototype.set = function (val) {
+            this.child = val;
+        };
 
-                        if (val === undefined) {
+        HasManyRelationship = Modelo.define(function (options) {
+            this.children = options.children && options.children.slice ?
+                            options.children.slice() : [];
+        });
 
-                            return c;
+        HasManyRelationship.prototype.get = function () {
+            return this.children.slice();
+        };
 
-                        }
+        HasManyRelationship.prototype.add = function (val) {
+            this.children.push(val);
+        };
 
-                        if (val.isInstance(child)) {
+        HasManyRelationship.prototype.remove = function (val) {
 
-                            c = val;
-                            return this;
+            var x,
+                found = [];
 
-                        }
+            for (x = 0; x < this.children.length; x = x + 1) {
 
-                        throw new Error("Invalid modelo.");
-
-                    };
-
-                });
-
-
-            };
-
-            return function (parent, type, child, as) {
-
-                if (type.toLowerCase() === "hasmany") {
-
-                    return hasMany(parent, child, as);
-
-                } else if (type.toLowerCase() === "hasone") {
-
-                    return hasOne(parent, child, as);
-
+                if (this.children[x] === val) {
+                    found.push(x);
                 }
 
-            };
+            }
 
-        }.call(this));
+            if (found.length > 0) {
 
-        // Define and return the module.
-        return relate;
+                while (found.length > 0) {
+                    x = found.pop();
+
+                    this.children.splice(x, 1);
+                }
+
+            }
+
+        };
+
+        HasManyRelationship.prototype.pop = function () {
+            return this.children.pop();
+        };
+
+        HasManyRelationship.prototype.shift = function () {
+            return this.children.shift();
+        };
+
+        Relationship = function (type, child, nullable) {
+
+            var rel, iface;
+
+            if (type.toLowerCase() === 'hasone') {
+
+                rel = new HasOneRelationship();
+
+                return function (val) {
+
+                    if (val === undefined) {
+                        return rel.get();
+                    }
+
+                    if (val === null || isNaN(val) === true) {
+
+                        if (nullable === false) {
+
+                            throw new Error("Relationship cannot be null.");
+
+                        }
+
+                        rel.set(val);
+                        return true;
+
+                    }
+
+                    if (!!val.isInstance && val.isInstance(child)) {
+
+                        rel.set(val);
+                        return true;
+
+                    }
+
+                    throw new Error("Value given does not match the relationship type.");
+
+                };
+
+            }
+
+            if (type.toLowerCase() === 'hasmany') {
+
+                rel = new HasManyRelationship();
+
+                iface = function () {
+                    return rel.get();
+                };
+
+                iface.add = function (val) {
+
+                    val = val || null;
+
+                    if (val === null || isNaN(val) === true) {
+
+                        if (nullable === false) {
+
+                            throw new Error("Relationship does not accept null values.");
+
+                        }
+
+                        rel.add(val);
+                        return true;
+
+                    }
+
+                    if (!!val.isInstance && val.isInstance(child)) {
+
+                        rel.add(val);
+                        return true;
+
+                    }
+
+                    throw new Error("Value given does not match the relationship type.");
+
+                };
+                iface.remove = function (v) {
+                    rel.remove(v);
+                };
+                iface.pop = function () {
+                    return rel.pop();
+                };
+                iface.shift = function () {
+                    return rel.shift();
+                };
+
+                return iface;
+
+            }
+
+        };
+
+        return Relationship;
 
     });
 
