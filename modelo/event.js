@@ -9,17 +9,16 @@
         deps = {
             amd: ['./modelo.js', './defer.js'],
             node: ['./modelo.js', './defer.js'],
-            browser: ['modelo', 'modelo/defer']
+            browser: ['Modelo', 'Modelo/defer']
         };
 
-    def.call(this, 'modelo/Event', deps[env], function (modelo, defer) {
+    def.call(this, 'Modelo/Event', deps[env], function (Modelo, defer) {
 
-        var EventMixin, emptyCallback, emptyContext;
+        var EventMixin, emptyContext;
 
-        emptyCallback = function () {};
         emptyContext = {};
 
-        EventMixin = modelo.define(function (options) {
+        EventMixin = Modelo.define(function (options) {
 
             this.events = {};
 
