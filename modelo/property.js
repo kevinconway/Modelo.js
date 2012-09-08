@@ -92,8 +92,7 @@
                 if (val === undefined) {
                     return Prop.get();
                 }
-                console.log(args);
-                console.log(type);
+
                 for (x = 0; x < args.length; x = x + 1) {
 
                     result = args[x](val);
