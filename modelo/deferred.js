@@ -7,15 +7,17 @@
     var env = factory.env,
         def = factory.def,
         deps = {
-            amd: ['./event.js', './defer.js'],
-            node: ['./event.js', './defer.js'],
-            browser: ['modelo/Event', 'modelo/defer']
+            amd: ['./modelo.js', './event.js', './defer.js'],
+            node: ['./modelo.js', './event.js', './defer.js'],
+            browser: ['Modelo', 'Modelo/Event', 'Modelo/defer']
         };
 
-    def.call(this, 'modelo/Deferred', deps[env], function (Event, defer) {
+    def.call(this, 'Modelo/Deferred', deps[env], function (Modelo, Event, defer) {
 
         var Deferred,
             DeferredObject,
+            PromiseObject,
+            PromiseCollectionObject,
             callWithValue;
 
         callWithValue = function (fn, value) {
@@ -27,6 +29,38 @@
                 };
 
             };
+
+        PromiseObject = Modelo.define(function (options) {
+
+            this.callback = function (fn) {
+                options.deferred.callback(fn);
+                return this;
+            };
+            this.done = this.callback;
+            this.succeess = this.callback;
+
+            this.errback = function (fn) {
+                options.deferred.errback(fn);
+                return this;
+            };
+            this.failure = this.errback;
+            this.error = this.errback;
+
+            this.resolved = function () {
+                return options.deferred.resolved;
+            };
+            this.failed = function () {
+                return options.deferred.failed;
+            };
+            this.completed = function () {
+                return options.deferred.completed;
+            };
+
+            this.value = function () {
+                return options.deferred.value;
+            };
+
+        });
 
         DeferredObject = Event.extend(function (options) {
 
@@ -128,40 +162,105 @@
 
         DeferredObject.prototype.promise = function () {
 
-            var thisDeferred = this,
-                promise = {};
+            return new PromiseObject({"deferred": this});
 
-            promise.callback = function (fn) {
-                thisDeferred.callback(fn);
+        };
+
+        PromiseCollectionObject = DeferredObject.extend(function (options) {
+
+            this.promiseCollection = {};
+            this.numberOfPromises = 0;
+            this.numberOfResolvedPromises = 0;
+
+            var x;
+
+            for (x in options.promises) {
+
+                if (options.promises.hasOwnProperty(x)) {
+
+                    this.add(x, options.promises[x]);
+
+                }
+
+            }
+
+        });
+
+        PromiseCollectionObject.prototype.add = function (key, promise) {
+
+            this.promiseCollection[key] = promise;
+            this.numberOfPromises = this.numberOfPromises + 1;
+
+            var op = this;
+
+            promise.callback(function (value) {
+
+                var x,
+                    finalValue = {};
+
+                op.numberOfResolvedPromises = op.numberOfResolvedPromises + 1;
+
+                if (op.numberOfResolvedPromises >= op.numberOfPromises) {
+
+                    for (x in op.promiseCollection) {
+
+                        if (op.promiseCollection.hasOwnProperty(x)) {
+
+                            finalValue[x] = op.promiseCollection[x].value();
+
+                        }
+
+                    }
+
+                    op.resolve(finalValue);
+
+                }
+
+            });
+
+            promise.errback(function (err) {
+
+                op.fail(err);
+
+            });
+
+            return this;
+
+        };
+
+        PromiseCollectionObject.prototype.promise = function () {
+
+            var promise = new PromiseObject({"deferred": this}),
+                op = this;
+
+            promise.add = function (key, value) {
+
+                op.add(key, value);
                 return this;
-            };
-            promise.done = promise.callback;
-            promise.succeess = promise.callback;
 
-            promise.errback = function (fn) {
-                thisDeferred.errback(fn);
-                return this;
-            };
-            promise.failure = promise.errback;
-            promise.error = promise.errback;
-
-            promise.resolved = function () {
-                return thisDeferred.resolved;
-            };
-            promise.failed = function () {
-                return thisDeferred.failed;
-            };
-            promise.completed = function () {
-                return thisDeferred.completed;
             };
 
             return promise;
 
         };
 
+        Deferred = function () {
+            return new DeferredObject();
+        };
+        Deferred.Deferred = Deferred;
 
+        Deferred.Promise = function (d) {
+            return new PromiseObject({"deferred": d});
+        };
 
-        Deferred = DeferredObject;
+        Deferred.PromiseCollection = function (promises) {
+
+            promises = promises || {};
+
+            return new PromiseCollectionObject({"promises": promises}).promise();
+
+        };
+
         return Deferred;
 
     });

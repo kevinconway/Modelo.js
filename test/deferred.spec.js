@@ -9,7 +9,7 @@
         deps = {
             amd: ['lib/expect', '../modelo/deferred'],
             node: ['./lib/expect', '../modelo/deferred.js'],
-            browser: ['expect', 'modelo/Deferred']
+            browser: ['expect', 'Modelo/Deferred']
         };
 
     def.call(this, 'spec/modelo', deps[env], function (expect, Deferred) {

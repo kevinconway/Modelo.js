@@ -7,21 +7,21 @@ Deferred.js Documentation
 Description
 ===========
 
-The deferred.js library is a Modelo object that can be used to help simplify
-asynchronous programming patterns. The deferred, and the limited promise
+The Deferred.js library is a Modelo object that can be used to help simplify
+asynchronous programming patterns. The Deferred, and the limited promise
 interface that it generates, can be used to represent a value that will be
 available in the future.
 
-There are many different implementations and APIs for deferred objects and
-promises. In this library a deferred represents a *single* value, or resource,
+There are many different implementations and APIs for Deferred objects and
+promises. In this library a Deferred represents a *single* value, or resource,
 that will be available at some point in the future. All callbacks registered
-with a deferred are called with the same value just as all errbacks registered
+with a Deferred are called with the same value just as all errbacks registered
 are called with the same error. Callbacks and errbacks are not guaranteed to
 execute in any particular order.
 
-All deferred objects can generate a promise interface. Promises are simply
-limited interfaces to deferred objects. Promises expose all of a deferred object
-with the exception of allowing the resolution or failure of a deferred.
+All Deferred objects can generate a promise interface. Promises are simply
+limited interfaces to Deferred objects. Promises expose all of a Deferred object
+with the exception of allowing the resolution or failure of a Deferred.
 
 To support more complex asynchronous patterns, promise collections may be used
 to aggregate promises into a single promise. This allows promises to be
@@ -37,7 +37,7 @@ Deferred Objects
 Deferred objects can be used to manage values, or resources, which are not yet
 available. Deferred objects are typically created inside of functions that would
 typically accept a callback as an argument. Rather than accepting a single
-callback, create a deferred and return a promise. To illustrate, this example
+callback, create a Deferred and return a promise. To illustrate, this example
 will show a use of jQuery's AJAX methods. jQuery, however, is in no way required
 for use of this library and is used here only for demonstration purposes.
 
@@ -45,23 +45,23 @@ for use of this library and is used here only for demonstration purposes.
 
     function getRSS() {
 
-        var deferred = new modelo.deferred.Deferred(); // new keyword optional
+        var Deferred = new Modelo.Deferred(); // new keyword optional
 
         $.ajax({
             url: "myrss.com",
             success: function (data) {
-                deferred.resolve(data);
+                Deferred.resolve(data);
             },
             error: function (jqxhr, status, err) {
-                deferred.fail(err);
+                Deferred.fail(err);
             }
         });
 
-        return deferred.promise();
+        return Deferred.promise();
 
     }
 
-Now the `getRSS function is both asynchronous, returns a deferred, and allows
+Now the `getRSS function is both asynchronous, returns a Deferred, and allows
 for multiple callbacks that make use of the eventual values::
 
     var rssPromise = getRSS();
@@ -85,7 +85,7 @@ Deferred Object Events
 
 There may be a scenario in which a function needs to be executed when a promise
 is resolved or failed but it does not depend on the value returned by the
-promise. In these scenarios events callbacks may be used rather than the
+promise. In these scenarios events may be used rather than the
 standard callback registration::
 
     var rssPromise = getRSS();
@@ -98,7 +98,7 @@ standard callback registration::
         console.log("FAILURE");
     });
 
-The only difference between registering success callbacks and normal callbacks
+The only difference between registering event callbacks and normal callbacks
 is that events are not processed with input parameters. That is the only
 difference.
 
@@ -114,7 +114,7 @@ but only resolve when all the contained promises are resolved::
     var rssPromise = getRSS(),
         jsonPromise = getJSON(),
         htmlPromise = getHTML(),
-        collection = new modelo.deferred.PromiseCollection();
+        collection = new Modelo.Deferred.PromiseCollection();
 
     collection.add("rss", rssPromise).add("json", jsonPromise);
     collection.add("html", htmlPromise);
@@ -126,7 +126,7 @@ but only resolve when all the contained promises are resolved::
     });
 
 Promise collections expose all of the same methods as promises with one
-additions: the `add` method. The `add` method registers and promise with
+addition: the `add` method. The `add` method registers and promise with
 the collections and assigns a keyword to the promise.
 
 The biggest difference between promises and promise collections is that
@@ -139,31 +139,31 @@ API Reference
 Exports
 -------
 
-The deferred.js library exports several objects. The primary object exported
+The Deferred.js library exports several objects. The primary object exported
 is a function that returns a new Deferred object when called (`new` keyword
 optional). Attached to this object are the Deferred, Promise, and Promise
 Collection objects. In Node.js and AMD environments, this library can be
 required::
 
-    var deferred = require('deferred');
+    var Deferred = require('Deferred');
 
-    typeof deferred === "function"; // true
+    typeof Deferred === "function"; // true
 
-    typeof deferred.Deferred === "function"; // true
+    typeof Deferred.Deferred === "function"; // true
 
-    typeof deferred.Promise === "function"; // true
+    typeof Deferred.Promise === "function"; // true
 
-    typeof deferred.PromiseCollection === "function"; // true
+    typeof Deferred.PromiseCollection === "function"; // true
 
-In a browser environment, the deferred library will load in the global `modelo`
-object under `modelo.Deferred`::
+In a browser environment, the Deferred library will load in the global `Modelo`
+object under `Modelo.Deferred`::
 
-    typeof modelo.Deferred === "function"; // true
+    typeof Modelo.Deferred === "function"; // true
 
 Deferred
 --------
 
-The deferred object can be constructed with the `new` keyword and requires no
+The Deferred object can be constructed with the `new` keyword and requires no
 arguments.
 
 callback(fn)
@@ -171,9 +171,9 @@ callback(fn)
 
 *Aliases: success, done*
 
-Registers a callback function to be executed upon resolution of this deferred.
-Functions registered with `callback` will be passed the value of the deferred
-as an argument when called. Functions registered after the deferred has already
+Registers a callback function to be executed upon resolution of this Deferred.
+Functions registered with `callback` will be passed the value of the Deferred
+as an argument when called. Functions registered after the Deferred has already
 been resolved will be automatically executed.
 
 All callbacks are launched asynchronously using the defer.js library.
@@ -183,9 +183,9 @@ errback(fn)
 
 *Aliases: failure, error*
 
-Registers a callback function to be executed upon failure of this deferred.
+Registers a callback function to be executed upon failure of this Deferred.
 Functions registered with `errback` will be passed the value of the error
-as an argument when called. Functions registered after the deferred has already
+as an argument when called. Functions registered after the Deferred has already
 been failed will be automatically executed.
 
 All errbacks are launched asynchronously using the defer.js library.
@@ -196,8 +196,8 @@ complete(fn)
 *Aliases: always, end*
 
 Registers a callback to be executed upon completion, whether success or failure,
-of this deferred. Functions registered with this method are passed the value of
-the `resolve` or `fail` methods. Functions registered after the deferred has
+of this Deferred. Functions registered with this method are passed the value of
+the `resolve` or `fail` methods. Functions registered after the Deferred has
 already been completed will be automatically executed.
 
 All complete callbacks are launched asynchronously using the defer.js library.
@@ -206,30 +206,30 @@ resolve(value)
 ^^^^^^^^^^^^^^
 
 Triggers the execution of the callback functions with the given value. This
-marks the deferred as complete and can only be called once.
+marks the Deferred as complete and can only be called once.
 
 fail(value)
 ^^^^^^^^^^^
 
 Triggers the execution of errback functions with the given value. This marks
-the deferred as complete and can only be called once.
+the Deferred as complete and can only be called once.
 
 promise()
 ^^^^^^^^^
 
-Generates a promise interface to this deferred.
+Generates a promise interface to this Deferred.
 
 
 Promise
 -------
 
-Promise objects can be created with the `new` keyword and accept a deferred
+Promise objects can be created with the `new` keyword and accept a Deferred
 object as an argument.
 
-Promise objects expose a limited interface to a deferred object that can be
+Promise objects expose a limited interface to a Deferred object that can be
 returned to the caller of a function. The interface it exposes allows developers
 to register callbacks and errbacks, but prevents them from calling the `resolve`
-or `fail` methods and from changing the final value of the deferred.
+or `fail` methods and from changing the final value of the Deferred.
 
 callback(fn)
 ^^^^^^^^^^^^
