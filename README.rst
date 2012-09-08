@@ -4,126 +4,210 @@ Modelo.js
 
 **An isomorphic JavaScript development tool set.**
 
-*Status: In Early Development*
+*Status: In Development*
 
-Development Plan
-================
+What Is Modelo?
+===============
 
-Pass 1 **(Complete)**
+Modelo is toolkit for building cross platform compatible JavaScript libraries.
 
-    Initial implementation of object definition and property validation API's.
+Developers who use Modelo gain access to three main categories of functionality:
 
-Pass 2 **(Complete)**
+    -   A framework for object definitions and inheritance.
 
-    Synchronous relationship API. (1-1, 1-N, N-N)
+    -   Cross platform support for asynchronous operations.
 
-Pass 3 **(Complete)**
+    -   A standardized API for interacting with persistent storage engines.
 
-    Synchronous event handling.
+        *Note: Still a work in progress.*
 
-Pass 4 **(Complete)**
+Tell Me More
+============
 
-    Cross platform asynchronous support.
+JavaScript Objects
+------------------
 
-Pass 5 **(Complete)**
+The Modelo package contains three modules related to creating and working with
+JavaScript objects: modelo.js, property.js, and relationship.js.
 
-    Asynchronous event handling.
+modelo.js
+^^^^^^^^^
 
-Pass 6 **(Complete)**
+The modelo.js module is the base for all objects in the Modelo package. It
+allows the creation and inheritance of multiple objects in an easy way::
 
-    Refactor deferred for event support.
+    var Animal, Lion, Eagle, Griffin, myPet;
 
-Pass 7 **(Complete)**
+    Animal = Modelo.define();
 
-    Add usage guides and API specifications for all libraries.
+    Lion = Animal.extend();
+    Lion.prototype.roar = function () { console.log("Roar"); };
 
-Pass 8 *(Current Pass)*
+    Eagle = Animal.extend(function (options) {
+        this.wingSpan = options.wingSpan || "2 Feet";
+    })
 
-    Update all tests to match new specifications.
+    Griffin = Modelo.define(Lion, Eagle);
 
-Pass 9
+    myPet = new Griffin({wingSpan: "12 Feet"});
 
-    Update all libraries for test compliance.
+    myPet.roar(); // Console Output: "Roar"
 
-Pass 10
+    myPet.wingSpan; // "12 Feet"
 
-    Expand code comment documentation.
+    myPet.isInstance(Griffin); // true
+    myPet.isInstance(Eagle); // true
+    myPet.isInstance(Lion); // true
+    myPet.isInstance(Animal); // true
 
-Pass 11
+For more detailed usage guides and API specifications, see the docs directory.
 
-    Add usage guide and API specifications for persistent storage library.
+property.js
+^^^^^^^^^^^
 
-Pass 12
+The property.js module provides a way to create type validated variables for
+us in JavaScript objects::
 
-    Add tests for persistent storage engine library.
+    var Person, somePerson;
 
-Pass 13
+     Person = Modelo.define(function (options) {
 
-    Add persistent storage engine library.
+        this.name = new Property("string", Property.nullable(false));
 
-Pass 14
-
-    Package for NPM.
-
-Usage Examples
-==============
-
-Modelo.js
----------
-
-The modelo.js library contains the core object definition logic that supports
-a simplified inheritance and multiple inheritance model for JavaScript objects.
-Inheritance is performed by copying the prototypes and constructors of inherited
-objects into a new composite object that can be safely altered and extended
-without modifying the inherited objects. As a trivial example::
-
-    var Animal, Dog, Bird, Chimera, myPet;
-
-    // Use define to create a new modelo object.
-    Animal = model.define();
-
-    // Constructors can be extended.
-    Dog = Animal.extend();
-
-    Dog.prototype.woof = function () {
-
-        console.log("woof");
-
-    };
-
-    // Custom constructors can be passed to define and extend.
-    // Constructors should accept an object literal as an argument.
-    // This object literal will contain all the values given at creation time.
-    Bird = Animal.extend(function (options) {
-
-        this.wingspan = options.wingspan || "6 feet";
+        this.name(options.name || "Juan Pérez");
 
     });
 
-    Bird.prototype.chirp = function () {
+    somePerson = new Person();
 
-        console.log("chirp");
+    somPerson.name(); // "Juan Pérez"
 
-    };
+    somePerson.name("John Smith");
+    somePerson.name(); // "John Smith"
 
-    // Inheritance precedence flows left to right. That is, Bird will overwrite
-    // Dog in the event of a conflict.
-    // All prototype properties and constructors are inherited.
-    Chimera = modelo.define(Dog, Bird);
+    somPerson.name(null); // Throws error due to Property.nullable(false).
 
-    // Instances are created with the new keyword.
-    myPet = new Chimera({wingspan: "8 feet"});
+    somePerson.name(1234); // Throws error due to incompatible type.
 
-    myPet.woof() // Console Output: "woof"
-    myPet.chirp() // Console Output: "chirp"
+For more detailed usage guides and API specifications, see the docs directory.
 
-    myPet.wingSpan; // "8 feet"
+relationship.js
+^^^^^^^^^^^^^^^
 
-    // Use the recursive isInstance method for type detection if needed.
-    myPet.isInstance(Chimera); //true
-    myPet.isInstance(Dog); // true
-    myPet.isInstance(Bird); // true
-    myPet.isInstance(Animal); // true
+The relationship.js module provides the same functionality as the property.js
+module except that it deals with properties that hold related objects rather
+than primitives:
+
+    var Person, john, juan;
+
+    Person = Modelo.define(function () {
+
+        this.bestFriend = new Relationship("hasone", Person);
+
+    });
+
+    john = new Person();
+    juan = new Person();
+
+    john.bestFriend(juan);
+    juan.bestFriend(john);
+
+    john.bestFriend() === juan; // true
+    juan.bestFriend() === john; // true
+
+For more detailed usage guides and API specifications, see the docs directory.
+
+Cross Platform Async
+--------------------
+
+A combination of the asynchronous programming pattern and nonblocking IO **is**
+the concurrency model for JavaScript applications. The Modelo package simplifies
+the process of writing cross platform compatible async libraries through three
+modules: defer.js, event.js, and deferred.js.
+
+defer.js
+^^^^^^^^
+
+The defer.js module exposes a single function called `defer`. This function
+is an abstraction over platform specif methods for deferring the execution of
+a function until the next cycle of the event loop. In Node.js this function
+aliases process.nextTick. In modern browsers this function leverages
+window.postMessage. In legacy browsers this function falls back on setTimeout.
+
+::
+
+    function logSomething() { console.log("ASYNC"); }
+
+    defer(logSomething);
+
+    // At some point later:
+    // Console Output: "ASYNC"
+
+For more detailed usage guides and API specifications, see the docs directory.
+
+event.js
+^^^^^^^^
+
+The event.js module provides an object that can be mixed into other objects
+generated by the modelo.js module. The event mixin adds, to any object, the
+ability to have even callbacks registered and triggered in a way that leverages
+the asynchronous nature of JavaScript::
+
+    var Person = Modelo.define(Event),
+        somePerson = new Person;
+
+    somePerson.on("birthday", function () { console.log("Happy B-Day."); })
+
+    somPerson.trigger("birthday");
+
+    // At some point later:
+    // Console Output: "Happy B-Day."
+
+For more detailed usage guides and API specifications, see the docs directory.
+
+deferred.js
+^^^^^^^^^^^
+
+The deferred.js module helps to simplify the process of writing and managing
+your own asynchronous functions::
+
+    // Wrap async operations in functions that return a deferred.
+    function getRemoteData() {
+
+        var deferred = new Deferred();
+
+        // Note: jQuery is not required and only used here for demonstration.
+        $.ajax({
+            url: "myDataServer.com",
+            success: function (data) {
+
+                deferred.resolve(data);
+
+            },
+            error: function (jqxhr, status, err) {
+                deferred.fail(err);
+            }
+
+        });
+
+        return deferred.promise();
+
+    }
+
+    // Now multiple callbacks can be added without nesting.
+
+    var resultPromise = getRemoteData();
+
+    resultPromise.callback(function (value) {
+        console.log(value);
+    });
+
+    resultPromise.errback(function (err) {
+        console.log(err);
+    });
+
+    // At some point later:
+    // Console Outputs the contents of either `value` or `err`
 
 For more detailed usage guides and API specifications, see the docs directory.
 
@@ -139,18 +223,24 @@ Node.js
 -------
 
 If loading in Node.js, simply require the file you need from the modelo
-directory. It works just like that.
+directory.
+
+It works just like that.
 
 Browser (<script>)
 ------------------
 
 Normal browser rules apply. Simply <script> tag in the libraries you need in the
-proper order. It works just like that.
+proper order. Everything will be loaded in the global Modelo namespace.
+
+It works just like that.
 
 Browser (AMD)
 -------------
 
-Simply add the file you need as a dependency. It works just like that.
+Simply add the file you need as a dependency like you would any other.
+
+It works just like that.
 
 License
 =======
