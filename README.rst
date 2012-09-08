@@ -211,6 +211,19 @@ your own asynchronous functions::
 
 For more detailed usage guides and API specifications, see the docs directory.
 
+Remaining Development Roadmap
+=============================
+
+-   Package for NPM
+
+-   Improve code comments
+
+-   Finalize persistent storage API
+
+-   Increase unit test coverage
+
+-   Expand usage and API documentation
+
 Setup Instructions
 ==================
 
