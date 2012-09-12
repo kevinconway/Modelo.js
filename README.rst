@@ -214,8 +214,6 @@ For more detailed usage guides and API specifications, see the docs directory.
 Remaining Development Roadmap
 =============================
 
--   Package for NPM
-
 -   Improve code comments
 
 -   Finalize persistent storage API
@@ -228,32 +226,47 @@ Setup Instructions
 ==================
 
 This library is designed from the beginning to operate in as many JavaScript
-environments as possible. Particularly, Node.js and the browser are key targets.
-Loading this library in the different environments should be relatively
-straightforward.
+environments as possible. To accomplish this, all modules have been wrapped in
+a specialized module pattern that will detect the current environment and
+choose the most appropriate loading mechanism.
+
+Currently support platforms are Node.js, browser via <script>, and AMD via
+RequireJS.
 
 Node.js
 -------
 
-If loading in Node.js, simply require the file you need from the modelo
-directory.
-
-It works just like that.
+Node.js developers can `$ NPM install modelo` and `require()` away. The module
+exported when running `require("modelo")` is the modelo.js module. All other
+modules can be loaded as `require("modelo/<module>")`.
 
 Browser (<script>)
 ------------------
 
-Normal browser rules apply. Simply <script> tag in the libraries you need in the
-proper order. Everything will be loaded in the global Modelo namespace.
+Developers working with a normal browser environment can use regular script
+tags to load modelo modules. Modelo.js loads into a single global `Modelo`
+object. As with any JavaScript loading with <script> tags, the proper load
+order must be used::
 
-It works just like that.
+    // Modules with no dependencies
+    <script src="modelo.js"></script>
+    <script src="defer.js"></script>
+
+    // Modules depending on modelo.js
+    <script src="property.js"></script>
+    <script src="relationship.js"></script>
+
+    // Modules depending on modelo.js and defer.js
+    <script src="event.js"></script>
+
+    // Modules depending on modelo.js, defer.js, and event.js
+    <script src="deferred.js"></script>
 
 Browser (AMD)
 -------------
 
-Simply add the file you need as a dependency like you would any other.
-
-It works just like that.
+Developers working with an AMD loader like RequireJS can add modelo.js modules
+as though they are normal dependencies.
 
 License
 =======
