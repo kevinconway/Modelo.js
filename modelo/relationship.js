@@ -39,7 +39,9 @@ SOFTWARE.
 
         var Relationship, HasOneRelationship, HasManyRelationship;
 
-
+        // The hasOne relationship is essentially the same thing exported
+        // by the property.js module except that it is expected to store
+        // object reference types rather than primitives.
         HasOneRelationship = Modelo.define(function (options) {
             this.child = options.child || undefined;
         });
@@ -52,11 +54,19 @@ SOFTWARE.
             this.child = val;
         };
 
+        // The hasMany relationship is essentially an array property
+        // that validates the elements in the array.
         HasManyRelationship = Modelo.define(function (options) {
             this.children = options.children && options.children.slice ?
                             options.children.slice() : [];
         });
 
+        // The `slice` method is used here so that a copy of
+        // the internal array is returned. Yes, the objects
+        // refereneced in the array can still be modified and
+        // the modifications will be persistent. However, the
+        // actual list that this relationship maintains cannot
+        // be manipulated except through the exposed interface.
         HasManyRelationship.prototype.get = function () {
             return this.children.slice();
         };
@@ -65,6 +75,13 @@ SOFTWARE.
             this.children.push(val);
         };
 
+        // This method allows for the selective removal of objects
+        // from the internal list. As it is, the method expects a
+        // reference to the object that should be removed.
+        //
+        // The method will first scan the internal list and mark
+        // the location of each element that matches the given reference.
+        // Then the method will `splice` out each of the matches.
         HasManyRelationship.prototype.remove = function (val) {
 
             var x,
@@ -90,6 +107,8 @@ SOFTWARE.
 
         };
 
+        // The `pop` and `shift` methods have been wrapped here
+        // for convenience.
         HasManyRelationship.prototype.pop = function () {
             return this.children.pop();
         };
@@ -98,6 +117,8 @@ SOFTWARE.
             return this.children.shift();
         };
 
+        // The relationship interface is closely modeled after the property
+        // interface.
         Relationship = function (type, child, nullable) {
 
             var rel, iface;

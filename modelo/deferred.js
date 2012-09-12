@@ -43,6 +43,8 @@ SOFTWARE.
             PromiseCollectionObject,
             callWithValue;
 
+        // This specialized scope is used later on to allow function that are
+        // executed asynchronously to be passed an input value.
         callWithValue = function (fn, value) {
 
                 return function () {
@@ -53,6 +55,21 @@ SOFTWARE.
 
             };
 
+        // PromiseObjects in this context are specialized wrappers around
+        // DeferredObjects that limit what actions can be performed on the
+        // deferred. Basically the intent is to prevent the manipulation or
+        // premature resolution/error of a deferred at runtime.
+        //
+        // Yes, I have read the proposed commonJS specification for promises.
+        // I've purposefully chosen to break from the current proposals because
+        // A) none of them are ratified yet and B) they all over complicate the
+        // purpose of a promise.
+        //
+        // In this module, promises are simply limited interfaces to a deferred.
+        // Promises do not expose a set of half-baked flow control functions.
+        //
+        // They simply allow interactions with a DeferredObject which is
+        // documented below.
         PromiseObject = Modelo.define(function (options) {
 
             this.callback = function (fn) {
@@ -85,6 +102,27 @@ SOFTWARE.
 
         });
 
+        // Deferreds are another construct that tend to be over complicated.
+        //
+        // For example, in Twisted Python's implementation of a deferred
+        // (http://twistedmatrix.com/documents/current/core/howto/defer.html#auto3)
+        // the callbacks and errbacks registered with the deferred are called
+        // in sequence and the choice of executing a callback or errback is
+        // determined by the result of the previously executed callback or
+        // errback. There may, indeed, be a million use cases for this type of
+        // logic but they have mixed flow control with their deferred
+        // implementation.
+        //
+        // In this module, deferreds do one thing only: represent a future
+        // resource.
+        //
+        // When that resource is ready all callback functions are
+        // executed asynchronously, in no given order, and with the resolved
+        // value as a single input parameter.
+        //
+        // When that resource is failed to load all errback function are
+        // executed asynchronously, in no given order, and with the error
+        // that caused the failure as a single input parameter.
         DeferredObject = Event.extend(function (options) {
 
             this.callbacks = [];
@@ -95,6 +133,15 @@ SOFTWARE.
 
         });
 
+        // This method, and its aliases `success` and `done`, can be used
+        // to register a callbcak function with the deferred. All callbacks
+        // registered using this method, or its aliases, are passed in a
+        // single value as input. This input parameter is the resolved
+        // value for the deferred.
+        //
+        // If the value of the deferred is unimportant to the callback
+        // it can, alternatively, be bound to the `success` and `done`
+        // events that are emitted.
         DeferredObject.prototype.callback = function (fn) {
 
             if (this.resolved === true) {
@@ -109,11 +156,19 @@ SOFTWARE.
             return this;
 
         };
-
         DeferredObject.prototype.succeess = DeferredObject.prototype.callback;
         DeferredObject.prototype.done = DeferredObject.prototype.callback;
 
 
+        // This method, and its aliases `failure` and `error`, can be used
+        // to register callbacks with the deferred that are executed when
+        // an error is thrown. Callbacks registered using this method, and
+        // its aliases, are passed a single input parameter that contains
+        // the error that was thrown.
+        //
+        // If the value of the error is unimportant there is the option
+        // of binding the callback to the `fail`, `failure`, and `error`
+        // events that are triggered.
         DeferredObject.prototype.errback = function (fn) {
 
             if (this.failed === true) {
@@ -128,11 +183,17 @@ SOFTWARE.
             return this;
 
         };
-
         DeferredObject.prototype.failure = DeferredObject.prototype.errback;
         DeferredObject.prototype.error = DeferredObject.prototype.errback;
 
 
+        // This method is used to mark the deferred as resolved and
+        // to execute all the success callbacks registered. The value
+        // passed to this method is the value that will be passed to
+        // all callbacks.
+        //
+        // This method only triggers the callbacks once after which
+        // neither it nor the `fail` method have any effect.
         DeferredObject.prototype.resolve = function (value) {
 
             var x;
@@ -158,6 +219,13 @@ SOFTWARE.
 
         };
 
+        // This method is used to mark the deferred as failed and
+        // to execute all the failure errbacks registered. The error value
+        // passed to this method is the value that will be passed to
+        // all errbacks.
+        //
+        // This method only triggers the errbacks once after which
+        // neither it nor the `resolve` method have any effect.
         DeferredObject.prototype.fail = function (value) {
 
             var x;
@@ -183,12 +251,40 @@ SOFTWARE.
 
         };
 
+        // Deferreds should never be returned directly to avoid the potential
+        // of runtime manipulation. Instead, return the value of this method
+        // any time that you would normally want to return the deferred.
         DeferredObject.prototype.promise = function () {
 
             return new PromiseObject({"deferred": this});
 
         };
 
+        // Admittedly, this construct borders on flow control. Promise
+        // collections basically allow for the combination of multiple
+        // promises into a single promise that resolved when all the contained
+        // promises have been resolved. Likewise, the collection fails when
+        // any of the contained promises fail.
+        //
+        // Unlike standard promises, the value passed to succes callbacks
+        // are always object literals. These object literals contain key=>value
+        // pairs of the values returned by the contained callbacks. The keys
+        // are determined when the promises are given to the promise collection.
+        //
+        // For example, assume that p1, p2, and p3 are promises returned by
+        // asynchronous functions that will be resolved to the values 1, 2, and
+        // 3 respectively::
+        //
+        //      var collection = new PromiseCollectionObject({
+        //          "p1": p1,
+        //          "p2": p2,
+        //          "p3": p3
+        //      });
+        //
+        //      collection.callback(function (values) { console.log(values); });
+        //
+        //      // Some time later...
+        //      // CONSOLE OUTPUT: {"p1": 1, "p2": 2, "p3": 3}
         PromiseCollectionObject = DeferredObject.extend(function (options) {
 
             this.promiseCollection = {};
@@ -209,6 +305,10 @@ SOFTWARE.
 
         });
 
+        // This method can be used to add promises to the collection after
+        // the initial creation of the collection. As an important note,
+        // it currently fails silently if you try to use it after the
+        // the collection has already been resolved or failed.
         PromiseCollectionObject.prototype.add = function (key, promise) {
 
             this.promiseCollection[key] = promise;
@@ -251,6 +351,8 @@ SOFTWARE.
 
         };
 
+        // This exposes an interface identical to a promise except
+        // it adds the `add` method.
         PromiseCollectionObject.prototype.promise = function () {
 
             var promise = new PromiseObject({"deferred": this}),
@@ -267,15 +369,32 @@ SOFTWARE.
 
         };
 
+        // Similar to other modules in this package, the interface returned
+        // by this module is a set of wrappers around the actual objects.
+        //
+        // In this case deferred objects can be created in any of the following
+        // ways::
+        //
+        //      new Deferred();
+        //      Deferred();
+        //      new Deferred.Deferred();
+        //      Deferred.Deferred();
+        //
+        // The choice comes down to style and preference.
         Deferred = function () {
             return new DeferredObject();
         };
         Deferred.Deferred = Deferred;
 
+        // Deferred.Promise exposes a secondary interface for creating promises.
+        // Using the `promise` method of a deferred and creating a new promise
+        // object while passing in your deferred have the same effect.
         Deferred.Promise = function (d) {
             return new PromiseObject({"deferred": d});
         };
 
+        // Expects a key=>value store of promises and outputs an extended
+        // promise interface that contains the `add` method.
         Deferred.PromiseCollection = function (promises) {
 
             promises = promises || {};

@@ -39,6 +39,19 @@ SOFTWARE.
 
         var define;
 
+        // Object constructor generation is wrapped in this scope for several
+        // reasons. The primary reason is that is allows the object constructor
+        // access to special scope that privately maintains the inheritance
+        // chain.
+        //
+        // A secondary reason for this scope is that it allows the package
+        // to operate in multiple programming patterns. For example, all of
+        // the following lines of code are equivalent::
+        //
+        //      Modelo();
+        //      new Modelo();
+        //      Modelo.define();
+        //      new Modelo.define();
         define = function () {
 
             var args = Array.prototype.slice.call(arguments),
@@ -46,6 +59,12 @@ SOFTWARE.
                 x,
                 p;
 
+            // This is the new object constructor that will be returned by a
+            // call to `define`. All it does is iterate through the constructors
+            // passed into `define` and treats them each like a constructor
+            // function. Each constructor is called with the context of the
+            // current instance so that any references to `this` in a
+            // constructor will always reference the current object.
             Modelo = function (options) {
 
                 var y;
@@ -60,8 +79,9 @@ SOFTWARE.
 
             };
 
-            // Iterate through inherited objects and leach properties from
-            // their prototypes.
+            // This loop performs the bulk of the inheritance model. It iterates
+            // over the prototypes of the constructors passed into `define` and
+            // attaches each item to the new constructor's prototype.
             for (x = 0; x < args.length; x = x + 1) {
 
                 for (p in args[x].prototype) {
@@ -76,6 +96,22 @@ SOFTWARE.
 
             }
 
+            // This method is attached directly to the constructor being
+            // returned so that is is used how you might use a class method.
+            // The `extend` method is simply a wrapper around `define` that
+            // adds the currently generated constructor as the first item in
+            // the inheritance chain. To illustrate, assume there is a Modelo
+            // called Animal that has been defined. The two following
+            // statements will perform identically::
+            //
+            //      Fish = Animal.extend();
+            //      Fish = Modelo.define(Animal);
+            //
+            // It just comes down to a matter style usage. For example, the
+            // first pattern using `extend` works well for code that needs to
+            // look like it is using classical inheritance. The second, however,
+            // is equally useful when making use of Mix-In objects to add
+            // boilerplate features to objects.
             Modelo.extend = function () {
 
                 var args = Array.prototype.slice.call(arguments);
@@ -86,6 +122,22 @@ SOFTWARE.
 
             };
 
+            // Personally, I suggest not using this method for detecting
+            // object type. Instead, I suggest detecting features of objects
+            // rather than their types. Regardless, I've implemented this
+            // method because there may be times when it is absolutely
+            // required to scan the inheritance chain an determine if an
+            // an object is derived from a particular constructor.
+            //
+            // Best case is that the object is a direct instance of the
+            // given constructor. In this case the method return true
+            // before anything else.
+            //
+            // Worst case is that the method must recursively scan back
+            // against the inheritance chains of all inherited constructors.
+            // It would be difficult to create an inheritance chain complex
+            // enough that this method would actually affect runtime
+            // performance, but it is a possibility.
             Modelo.prototype.isInstance = function (f) {
 
                 var x;

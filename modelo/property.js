@@ -39,6 +39,8 @@ SOFTWARE.
 
         var Property, PropertyObject;
 
+        // This object serves as a container for a given property value.
+        // It is used internally by this module and is not exposed.
         PropertyObject = new Modelo(function (options) {
             this.value = options.value || undefined;
         });
@@ -51,6 +53,8 @@ SOFTWARE.
             this.value = val;
         };
 
+        // The generation of property objects is wrapped in this special scope
+        // so that validation functions can be privately maintained.
         Property = function () {
 
             var args = Array.prototype.slice.call(arguments),
@@ -58,10 +62,14 @@ SOFTWARE.
                 typeValidator,
                 Prop;
 
+            // If a string is passed in as the first argument then it is
+            // assumed to be the property type.
             if (args.length > 0 && typeof args[0] === "string") {
                 type = args.shift();
             }
 
+            // By default, all property types allow `null` and `NaN` values
+            // in addition to values of the appropriate types.
             switch (type) {
 
             case "undefined":
@@ -104,10 +112,39 @@ SOFTWARE.
                 break;
             }
 
+            // Type validation is inserted at the beginning of the validation
+            // chain so that type checking is performed before any other
+            // validation functions.
             args.splice(0, 0, typeValidator);
 
             Prop = new PropertyObject();
 
+            // I went back and forth when writing the specifications on whether
+            // Property objects should be standard Modelo objects or if they
+            // should expose a specialized interface. The decision came down to
+            // the fact that raw Modelo objects would require that `get` and
+            // `set` methods be used by developers. I felt this was a less than
+            // optimal interface for working with properties.
+            //
+            // In other languages, such as Python and .Net, there are
+            // specialized property objects build into the language that allow
+            // for properties to appear as though they are simple object when,
+            // in fact, the object is internally calling `get` and `set`
+            // functions. As an illustration, the following line of code::
+            //
+            //      myInstance.property = "some value";
+            //
+            // would actually perform the following::
+            //
+            //      myInstance.setProperty("some value");
+            //
+            // Personally, I'm quite fond of hiding the complex `get` and `set`
+            // begin a interface that appears naturally in the language.
+            // Unfortunately JavaScript does not have a construct like this.
+            // Instead I've opted for the following interface::
+            //
+            //      myInstance.property(); // runs getter
+            //      myInstance.property("some value"); // runs setter
             return function (val) {
 
                 var x, result;
@@ -146,6 +183,12 @@ SOFTWARE.
 
         };
 
+        // All of the standard validators below actually generate functions
+        // from within a special scope. For example, Property.nullable accepts
+        // a boolean value to indicate whether or not a null value is an
+        // acceptable value. It then generates a validation function that
+        // uses that boolean value. The purpose of this is to allow for multiple
+        // reuse of these standard validators in an easy way.
         Property.nullable = function (n) {
 
             if (n === false) {
@@ -170,6 +213,8 @@ SOFTWARE.
 
         };
 
+        // The max and min length operators will work against anything that
+        // exposes a `length` property.
         Property.max_length = function (n) {
 
             n = n || 0;
@@ -206,6 +251,8 @@ SOFTWARE.
 
         };
 
+        // The min and max value operators will work against anything that
+        // can be compared using the standard comparison operators.
         Property.max_value = function (n) {
 
             n = n || 0;
@@ -242,6 +289,10 @@ SOFTWARE.
 
         };
 
+        // The Property.define alias is registered here to align the API for
+        // generating properties with the API for generating Modelo objects.
+        // Obviously they produce different kinds of objects and interfaces
+        // as an end product.
         Property.define = Property;
 
         return Property;

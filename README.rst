@@ -214,8 +214,6 @@ For more detailed usage guides and API specifications, see the docs directory.
 Remaining Development Roadmap
 =============================
 
--   Improve code comments
-
 -   Finalize persistent storage API
 
 -   Increase unit test coverage
