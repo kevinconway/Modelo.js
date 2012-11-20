@@ -157,7 +157,7 @@ SOFTWARE.
                     }
 
                     if (!!args[x].prototype.isInstance &&
-                        args[x].prototype.isInstance(f)) {
+                            args[x].prototype.isInstance(f)) {
                         return true;
                     }
                 }

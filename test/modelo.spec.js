@@ -100,11 +100,13 @@
                 Talker.prototype.speak = function () {
                     if (this.language === 'EN') {
                         return "Hello.";
-                    } else if (this.language === 'ES') {
-                        return "Hola.";
-                    } else {
-                        return "...";
                     }
+
+                    if (this.language === 'ES') {
+                        return "Hola.";
+                    }
+
+                    return "...";
                 };
 
                 Walker = Modelo.define(function (options) {
@@ -157,11 +159,13 @@
                 Talker.prototype.speak = function () {
                     if (this.language === 'EN') {
                         return "Hello.";
-                    } else if (this.language === 'ES') {
-                        return "Hola.";
-                    } else {
-                        return "...";
                     }
+
+                    if (this.language === 'ES') {
+                        return "Hola.";
+                    }
+
+                    return "...";
                 };
 
                 Walker = Modelo.define(function (options) {
