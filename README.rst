@@ -60,23 +60,31 @@ RequireJS.
 Node.js
 -------
 
-Node.js developers can `$ NPM install modelo` and `require()` away. The module
-exported when running `require("modelo")` is the modelo.js module.
+This package is published through NPM under the name `modelo`::
+
+    $ npm install modelo
+
+Once installed, node developers can simply `require("modelo")`.
 
 Browser (<script>)
 ------------------
 
-Developers working with a normal browser environment can use regular script
-tags to load mMdelo. Modelo.js loads into a single global `Modelo`
-object::
+Developers working in normal browser environments can use <script> tags to load
+this package::
 
     <script src="modelo.js"></script>
+
+There are no dependencies that must be loaded before this package.
 
 Browser (AMD)
 -------------
 
-Developers working with an AMD loader like RequireJS can add Modelo as though
-it were normal dependencies.
+Developers working with RequireJS can load the package like any other. Place
+the package in the /lib, or equivalent, directory and use `require()`::
+
+    require(['modelo'], function (Modelo) {
+
+    });
 
 License
 =======

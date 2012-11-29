@@ -154,8 +154,8 @@ an `extend` method attached to Modelo object constructors. To illustrate::
     widget.getRating();  // 5
 
 The above example is not intended to be a realistic example of an inheritance
-use case but, rather, to demonstrate the fact that objects can be inherited.
-It is important to notice and inherited constructors are run automatically
+use case but to demonstrate the fact that objects can be inherited.
+It is important to notice that inherited constructors are run automatically
 without the need for a call to the parent definition. Any functionality of a
 parent object constructor can be overwritten in the child constructors as they
 are guaranteed to run in inheritance order. Likewise, prototype properties of
@@ -168,8 +168,8 @@ Modelo objects allow for the simple inheritance of multiple parent objects. The
 same `define` and `extend` methods are used to provide this feature. The above
 example for object inheritance could be extended to show multiple inheritance,
 but one of the real benefits of multiple inheritance in JavaScript is that it
-enables developers to make use of "Mixin" objects. "Mixin" in this scenario
-is when multiple objects contain generalized sets of functionality that can be
+enables developers to make use of "Mixin" objects. "Mixin", in this scenario
+is, when multiple objects contain generalized sets of functionality that can be
 shared by multiple other objects. Here is an example::
 
     var Unique, Timestamped, Person, myPerson;
@@ -187,7 +187,7 @@ shared by multiple other objects. Here is an example::
 
     });
 
-    Timestamped.prototype.modified = function () {
+    Timestamped.prototype.modify = function () {
 
         this.modified = new Date();
 
@@ -207,7 +207,7 @@ shared by multiple other objects. Here is an example::
     myPerson.modified;  // Date object representing creation time
     myPerson.name;  // "Juan Pérez"
 
-    myPerson.modified();
+    myPerson.modify();
     myPerson.modified;  // Date object representing last modified time
 
 Like the earlier example of object inheritance, this example is trivial in its
