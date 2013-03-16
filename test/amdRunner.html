@@ -1,61 +1,60 @@
 <html>
-  <head>
-    <title>Modelo Tests</title>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <head>
 
-    <link rel="stylesheet" href="./lib/style.css" />
+        <title>Modelo Tests</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    <script>
-      if(typeof String.prototype.trim !== 'function') {
-        String.prototype.trim = function() {
-          return this.replace(/^\s+|\s+$/g, '');
-        }
-      }
-    </script>
+        <link rel="stylesheet" href="./lib/style.css" />
 
-    <script src="./lib/mocha.js"></script>
-    <script src="./lib/require.js"></script>
-
-    <script>
-        requirejs.config({
-            shim: {
-                'lib/expect': {
-
-                    deps: [],
-
-                    exports: 'expect'
+        <script>
+            if(typeof String.prototype.trim !== 'function') {
+                String.prototype.trim = function() {
+                    return this.replace(/^\s+|\s+$/g, '');
                 }
             }
-        });
-        require(['modelo.spec.js'], function () {});
-    </script>
+        </script>
 
-    <script>
+        <script src="./lib/mocha.js"></script>
+        <script src="./lib/require.js"></script>
 
-      mocha.setup({
-        ui: 'bdd',
-        globals: [],
-        timeout: 1500
-      })
-    </script>
+        <script>
+            requirejs.config({
+                shim: {
+                    'lib/expect': {
 
-    <script>
-      function assert(expr, msg) {
-        if (!expr) throw new Error(msg || 'failed');
-      }
-    </script>
+                        deps: [],
 
-    <script>
-     onload = function(){
-        var runner = mocha.run();
-      };
-    </script>
+                        exports: 'expect'
+                    }
+                }
+            });
+            require(['modelo.spec.js'], function () {});
+        </script>
 
-  </head>
+        <script>
 
-  <body>
+            mocha.setup({
+                ui: 'bdd',
+                globals: [],
+                timeout: 1500
+            });
+        </script>
+
+        <script>
+            function assert(expr, msg) {
+                if (!expr) throw new Error(msg || 'failed');
+            }
+        </script>
+
+        <script>
+            setTimeout(mocha.run, 1000);
+        </script>
+
+    </head>
+
+    <body>
     <div id="mocha"></div>
-  </body>
+    </body>
 
 </html>
