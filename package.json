@@ -8,7 +8,7 @@
     "type": "git",
     "url": "git://github.com/kevinconway/Modelo.js.git"
   },
-  "main": "./modelo.js",
+  "main": "./modelo/modelo.js",
   "scripts": {
     "test": "mocha"
   },
