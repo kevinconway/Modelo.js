@@ -8,8 +8,8 @@ Description
 ===========
 
 The modelo.js library provides developers with a simplified interface to
-multiple, prototypal inheritance. The library exposes a single, primary function
-called `define` which generates JavaScript objects with Modelo properties.
+multiple, prototypal inheritance. The library exposes a single, primary
+function called `define` which generates JavaScript object constructors.
 
 Usage Examples
 ==============
@@ -28,7 +28,7 @@ Now the `Person` variable contains an object constructor that can be used
 as though it were any other JavaScript constructor. Prototype attributes can
 be added and instances can be created with or without the `new` keyword::
 
-    Var Person, myPerson;
+    var Person, myPerson;
 
     Person = Modelo.define();
 
@@ -49,10 +49,10 @@ be added and instances can be created with or without the `new` keyword::
 Object Constructors
 -------------------
 
-Defining a basic Modelo object is useful in different scenarios, but most
-cases call for an object constructor function. Giving a Modelo object a custom
-constructor function is just as simple as working with regular JavaScript
-objects::
+Basic constructors, with no arguments, can be useful in different situation.
+Most of the time, however, an object needs custom logic in the constructor.
+Creating a Modelo object with custom constructors is the same as creating a
+normal, JavaScript object constructor function::
 
     Var Person, myPerson;
 
@@ -139,19 +139,13 @@ an `extend` method attached to Modelo object constructors. To illustrate::
 
     });
 
-    RatedProduct.prototype.getRating = function () {
-
-        return this.rating;
-
-    };
-
     widget = new RatedProduct({number: 1234,
                                 description: "This product is fake.",
                                 rating: 5});
 
     widget.getNumber();  // 1234
     widget.getDescription();  // "This product is fake."
-    widget.getRating();  // 5
+    widget.rating;  // 5
 
 The above example is not intended to be a realistic example of an inheritance
 use case but to demonstrate the fact that objects can be inherited.
@@ -168,8 +162,8 @@ Modelo objects allow for the simple inheritance of multiple parent objects. The
 same `define` and `extend` methods are used to provide this feature. The above
 example for object inheritance could be extended to show multiple inheritance,
 but one of the real benefits of multiple inheritance in JavaScript is that it
-enables developers to make use of "Mixin" objects. "Mixin", in this scenario
-is, when multiple objects contain generalized sets of functionality that can be
+enables developers to make use of "Mixin" objects. "Mixin", in this scenario,
+is when multiple objects contain generalized sets of functionality that can be
 shared by multiple other objects. Here is an example::
 
     var Unique, Timestamped, Person, myPerson;
@@ -217,17 +211,16 @@ constructor and prototype.
 
 Something not immediately apparent from the example is that inheritance flows
 from left to right. That is, the last constructor has the ability to overwrite
-all previous constructors.
+all previous constructor side-effects.
 
 Detecting Inheritance
 ---------------------
 
-The general consensus of the JavaScript community is that detecting an object's
-type is less appropriate than checking the object's properties. However, should
-the scenario ever occur in which the object's type must be known, an
-`isInstance` method is attached to all instances of Modelo objects. `isInstance`
-will recursively walk the inheritance chains and return true or false. As a
-trivial example::
+Arguments of type checking versus behaviour checking aside, it is occasionally
+useful to determine if an object is descended from a particular inheritance
+chain. To support this, an `isInstance` method is attached to all instances of
+Modelo objects. `isInstance` will recursively walk the inheritance chains and
+return true or false based on what it finds. As a trivial example::
 
     var Unique, Timestamped, Product, RatedProduct, myProduct;
 
@@ -254,7 +247,7 @@ API Reference
 Exports
 -------
 
-The modelo.js library exports a function that generates modelo objects. A proxy
+The modelo.js library exports a function that generates Modelo objects. A proxy
 for this function has been created as the root export for ease of use::
 
     var Modelo = require('modelo');
@@ -287,12 +280,14 @@ prototype in the event of a conflict.
 Modelo Object
 -------------
 
-Modelo objects are generated with either a call to `define` or to `extend`. They
-can be initialized with the `new` keyword.
+Modelo objects are generated with either a call to `define` or to `extend`.
+They can be initialized with, or without, the `new` keyword.
 
 ::
 
     var myInstance = new MyObject();
+    // or
+    var myInstance = MyObject();
 
 extend()
 ^^^^^^^^

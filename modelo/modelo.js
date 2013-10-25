@@ -39,56 +39,53 @@ SOFTWARE.
 
         var define;
 
-        // Object constructor generation is wrapped in this scope for several
-        // reasons. The primary reason is that is allows the object constructor
-        // access to special scope that privately maintains the inheritance
-        // chain.
-        //
-        // A secondary reason for this scope is that it allows the package
-        // to operate in multiple programming patterns. For example, all of
-        // the following lines of code are equivalent::
-        //
-        //      Modelo();
-        //      new Modelo();
-        //      Modelo.define();
-        //      new Modelo.define();
         define = function () {
 
-            var args = Array.prototype.slice.call(arguments),
+            var constructors = Array.prototype.slice.call(arguments),
                 Modelo,
                 x,
                 p;
 
-            // This is the new object constructor that will be returned by a
-            // call to `define`. All it does is iterate through the constructors
-            // passed into `define` and treats them each like a constructor
-            // function. Each constructor is called with the context of the
-            // current instance so that any references to `this` in a
-            // constructor will always reference the current object.
+            /*
+                Here the new constructor is built. As each new instance is
+                built the Modelo constructor will iterate over the constructors
+                given to 'define' and call them in the current context. This
+                allows for a Modelo to accept multiple constructors and process
+                them in a deterministic way.
+
+                Constructors can be any function, including other Modelo
+                constructors. There are no restrictions placed on what the
+                given functions can do. Each function is bound to the current
+                context so all references to 'this' are directed at the new
+                instance being created.
+            */
             Modelo = function (options) {
 
                 var y;
 
                 options = options || {};
 
-                // Iterate through constructor functions and call them in the
-                // current context.
-                for (y = 0; y < args.length; y = y + 1) {
-                    args[y].call(this, options);
+                for (y = 0; y < constructors.length; y = y + 1) {
+
+                    constructors[y].call(this, options);
+
                 }
 
             };
 
-            // This loop performs the bulk of the inheritance model. It iterates
-            // over the prototypes of the constructors passed into `define` and
-            // attaches each item to the new constructor's prototype.
-            for (x = 0; x < args.length; x = x + 1) {
+            /*
+                Here the 'prototype' attribute of each given constructor is
+                processed. Every attribute directly attached to the 'prototype'
+                of a constructor is grafted on to the prototype of the new
+                Modelo constructor.
+            */
+            for (x = 0; x < constructors.length; x = x + 1) {
 
-                for (p in args[x].prototype) {
+                for (p in constructors[x].prototype) {
 
-                    if (args[x].prototype.hasOwnProperty(p)) {
+                    if (constructors[x].prototype.hasOwnProperty(p)) {
 
-                        Modelo.prototype[p] = args[x].prototype[p];
+                        Modelo.prototype[p] = constructors[x].prototype[p];
 
                     }
 
@@ -96,70 +93,88 @@ SOFTWARE.
 
             }
 
-            // This method is attached directly to the constructor being
-            // returned so that is is used how you might use a class method.
-            // The `extend` method is simply a wrapper around `define` that
-            // adds the currently generated constructor as the first item in
-            // the inheritance chain. To illustrate, assume there is a Modelo
-            // called Animal that has been defined. The two following
-            // statements will perform identically::
-            //
-            //      Fish = Animal.extend();
-            //      Fish = Modelo.define(Animal);
-            //
-            // It just comes down to a matter style usage. For example, the
-            // first pattern using `extend` works well for code that needs to
-            // look like it is using classical inheritance. The second, however,
-            // is equally useful when making use of Mix-In objects to add
-            // boilerplate features to objects.
+            /*
+                The 'extend' is attached directly to the constructor to make it
+                similar to a class method. It simply wraps a new call to
+                'define' and adds the current 'Modelo' constructor as the first
+                argument.
+
+                This provides a slightly easier way to inherity from a given
+                Modelo. The same behaviour, however, can be achieved by calling
+                'define' with the target Modelo as the first argument. The
+                following snippets, for example, are equivalent:
+
+                    var MyThing = Modelo.define(),
+                        MySubThing = MyThing.extend();
+
+                    var MyThing = Modelo.define(),
+                        MySubThing = Modelo.define(MyThing);
+
+            */
             Modelo.extend = function () {
 
-                var args = Array.prototype.slice.call(arguments);
+                var extensions = Array.prototype.slice.call(arguments);
 
-                args.splice(0, 0, Modelo);
+                extensions.splice(0, 0, Modelo);
 
-                return define.apply({}, args);
+                return define.apply({}, extensions);
 
             };
 
-            // Personally, I suggest not using this method for detecting
-            // object type. Instead, I suggest detecting features of objects
-            // rather than their types. Regardless, I've implemented this
-            // method because there may be times when it is absolutely
-            // required to scan the inheritance chain an determine if an
-            // an object is derived from a particular constructor.
-            //
-            // Best case is that the object is a direct instance of the
-            // given constructor. In this case the method return true
-            // before anything else.
-            //
-            // Worst case is that the method must recursively scan back
-            // against the inheritance chains of all inherited constructors.
-            // It would be difficult to create an inheritance chain complex
-            // enough that this method would actually affect runtime
-            // performance, but it is a possibility.
+            /*
+                This utility method determines whether or not a given instance
+                is derived from a given constructor.
+
+                To provide this facility, the method will first compare the
+                identity of the provided constructor against that of the
+                Modelo that produced the instance. For example:
+
+                    var MyThing = Modelo.define(),
+                        myInstance = new MyThing();
+
+                    myInstance.isInstance(MyThing); // true
+
+                Next it will compare the given constructor to all the
+                constructors given at the time of the Modelo definition and
+                recursively call 'isInstance' on those constructors if
+                applicable:
+
+                    var MyConstructor = function () {},
+                        MyThing = Modelo.define(MyConstructor),
+                        myInstance = new MyThing();
+
+                    myInstance.isInstance(MyConstructor); // true
+
+                It would be difficult to create an inheritance chain to deep
+                and complex that this method would cause any significant
+                disruption of runtime. However, it's worth noting that it is
+                a recursive function and will always run an exhaustive search.
+            */
             Modelo.prototype.isInstance = function (f) {
 
-                var x;
+                var z;
 
                 if (f === Modelo) {
+
                     return true;
+
                 }
 
-                // This args variable references the args
-                // passed into the Modelo definition. In
-                // other words, it is a list of all
-                // constructors used in the creation of
-                // this Modelo.
-                for (x = 0; x < args.length; x = x + 1) {
-                    if (f === args[x]) {
+                for (z = 0; z < constructors.length; z = z + 1) {
+
+                    if (f === constructors[z]) {
+
                         return true;
+
                     }
 
-                    if (!!args[x].prototype.isInstance &&
-                            args[x].prototype.isInstance(f)) {
+                    if (!!constructors[z].prototype.isInstance &&
+                            constructors[z].prototype.isInstance(f)) {
+
                         return true;
+
                     }
+
                 }
 
                 return false;
@@ -170,14 +185,20 @@ SOFTWARE.
 
         };
 
-        // Specification calls for allowing the following:
-        //
-        // new Modelo();
-        // Modelo();
-        // Modelo.define();
+        /*
+            This circular reference helps provide a more flexible interface
+            and allows for all of the following calls to function identically:
+
+                var MyThing = Modelo();
+
+                var MyThing = new Modelo();
+
+                var MyThing = Modelo.define();
+
+                var MyThing = new Modelo.define();
+        */
         define.define = define;
 
-        // Define and return the module.
         return define;
 
     });
