@@ -4,7 +4,9 @@ Modelo.js
 
 **A cross-platform JavaScript object inheritance utility.**
 
-*Status: Stable*
+.. image:: https://travis-ci.org/kevinconway/Modelo.js.png
+    :target: https://travis-ci.org/kevinconway/Modelo.js
+    :alt: Current Build Status
 
 What Is Modelo?
 ===============
