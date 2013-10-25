@@ -16,20 +16,6 @@
 
         describe('The Modelo library', function () {
 
-            it('loads in the current environment (' + env + ')', function () {
-
-                expect(Modelo).to.be.ok();
-
-            });
-
-            it('exports a specification compliant interface', function () {
-
-                expect(typeof Modelo).to.be("function");
-
-                expect(typeof Modelo.define).to.be("function");
-
-            });
-
             it('supports the basic style of object definition', function () {
 
                 var T = Modelo.define(),
