@@ -20,7 +20,7 @@ object definitions and inheritance.
 Show Me
 =======
 
-::
+.. code-block:: javascript
 
     var Animal, Lion, Eagle, Griffin, myPet;
 
@@ -48,16 +48,8 @@ Show Me
 
 For more detailed usage guides and API specifications, see the docs directory.
 
-Setup Instructions
-==================
-
-This library is designed to operate in multiple JavaScript environments without
-requiring change to the code base. To accomplish this, all modules have been
-wrapped in a specialized module pattern that will detect the current
-environment and choose the most appropriate loading mechanism for dependencies.
-
-Currently support platforms are Node.js, browser via <script>, and AMD via
-RequireJS.
+Setup
+=====
 
 Node.js
 -------
@@ -66,10 +58,10 @@ This package is published through NPM under the name `modelo`::
 
     $ npm install modelo
 
-Once installed, node developers can simply `require("modelo")`.
+Once installed, simply `require("modelo")`.
 
-Browser (<script>)
-------------------
+Browser
+-------
 
 Developers working in normal browser environments can use <script> tags to load
 this package::
@@ -77,16 +69,6 @@ this package::
     <script src="modelo.js"></script>
 
 There are no dependencies that must be loaded before this package.
-
-Browser (AMD)
--------------
-
-Developers working with RequireJS can load the package like any other. Place
-the package in the /lib, or equivalent, directory and use `require()`::
-
-    require(['modelo'], function (Modelo) {
-
-    });
 
 License
 =======
@@ -98,7 +80,7 @@ This project is released and distributed under an MIT License.
 
 ::
 
-    Copyright (C) 2013 Kevin Conway
+    Copyright (C) 2012 Kevin Conway
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to
@@ -124,24 +106,14 @@ Contributors
 Style Guide
 -----------
 
-This library needs to be not only cross-platform compatible but also backwards
-compatible as much as possible when it comes to browser environments. For this
-reason, all code in this repository must validate with JSLint.
+All code must validate against JSlint.
 
 Testing
 -------
 
-Test coverage is essential to backing up the claim that this library is
-compatible across multiple JavaScript environments. Unit tests are this
-repository's guarantee that all components function as advertised. For this
-reason, all code in this repository must be tested using the chosen unit
-testing library: Mocha.js. The chosen assertion library to use with Mocha
-for this project is Expect.js. Mocha and Expect have been chosen for their
-cross-platform compatibility.
-
-For convenience and portability, both Mocha and Express are included in this
-repository. For further convenience, browser based test runners have also been
-included for both <script> and AMD loading.
+Mocha plus expect. All tests and functionality must run in Node.js and the
+browser. Copies of the test libraries are bundled with the project to support
+a browser based test runner.
 
 Contributor's Agreement
 -----------------------
