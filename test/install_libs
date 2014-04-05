@@ -1,0 +1,37 @@
+#!/bin/bash
+
+TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LIB_DIR="${TEST_DIR}/lib"
+MODULES_DIR="$(readlink -f "${TEST_DIR}/../node_modules")"
+MODELO_PATH="$(readlink -f "${TEST_DIR}/../modelo/modelo.js")"
+
+mkdir -p "${LIB_DIR}"
+mkdir -p "${MODULES_DIR}"
+
+if [[ ! -a "${LIB_DIR}/expect.js" ]]; then
+    wget \
+    https://raw.githubusercontent.com/LearnBoost/expect.js/master/index.js \
+    -O "${LIB_DIR}/expect.js" -q
+fi
+
+if [[ ! -a "${LIB_DIR}/mocha.js" ]]; then
+    wget https://raw.githubusercontent.com/visionmedia/mocha/master/mocha.js \
+    -O "${LIB_DIR}/mocha.js" -q
+fi
+
+if [[ ! -a "${LIB_DIR}/mocha.css" ]]; then
+    wget https://raw.githubusercontent.com/visionmedia/mocha/master/mocha.css \
+    -O "${LIB_DIR}/mocha.css" -q
+fi
+
+if [[ ! -a "${LIB_DIR}/modelo.js" ]]; then
+    ln -s "${MODELO_PATH}" "${LIB_DIR}/modelo.js"
+fi
+
+if [[ ! -a "${MODULES_DIR}/modelo.js" ]]; then
+    ln -s "${MODELO_PATH}" "${MODULES_DIR}/modelo.js"
+fi
+
+if [[ ! -a "${MODULES_DIR}/expect.js" ]]; then
+    ln -s "${LIB_DIR}/expect.js" "${MODULES_DIR}/expect.js"
+fi

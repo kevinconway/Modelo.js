@@ -28,7 +28,7 @@ SOFTWARE.
 
   generator.call(
     context,
-    'Modelo',
+    'modelo',
     [],
     function () {
 

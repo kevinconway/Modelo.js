@@ -24,7 +24,7 @@ Show Me
 
     var Animal, Lion, Eagle, Griffin, myPet;
 
-    Animal = Modelo.define();
+    Animal = modelo.define();
 
     Lion = Animal.extend();
     Lion.prototype.roar = function () { console.log("Roar"); };
@@ -33,7 +33,7 @@ Show Me
         this.wingSpan = options.wingSpan || "2 Feet";
     })
 
-    Griffin = Modelo.define(Lion, Eagle);
+    Griffin = modelo.define(Lion, Eagle);
 
     myPet = new Griffin({wingSpan: "12 Feet"});
 
@@ -69,6 +69,14 @@ this package::
     <script src="modelo.js"></script>
 
 There are no dependencies that must be loaded before this package.
+
+Tests
+-----
+
+To run the tests in Node.js use the `npm test` command.
+
+To run the tests in a browser, run the `install_libs` script in the test
+directory and then open the `runner.html` in the browser of your choice.
 
 License
 =======
