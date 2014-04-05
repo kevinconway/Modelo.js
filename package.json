@@ -10,7 +10,7 @@
   },
   "main": "./modelo/modelo.js",
   "scripts": {
-    "test": "mocha"
+    "test": "./test/install_libs && mocha"
   },
   "dependencies": {},
   "devDependencies": {},

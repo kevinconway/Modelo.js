@@ -70,6 +70,14 @@ this package::
 
 There are no dependencies that must be loaded before this package.
 
+Tests
+-----
+
+To run the tests in Node.js use the `npm test` command.
+
+To run the tests in a browser, run the `install_libs` script in the test
+directory and then open the `runner.html` in the browser of your choice.
+
 License
 =======
 

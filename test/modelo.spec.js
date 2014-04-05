@@ -1,301 +1,271 @@
-/*global require, define, module, describe, it, xit
+/*jslint node: true, indent: 2, passfail: true, newcap: true */
+/*globals describe, it */
 
-*/
-(function (ctx, factory) {
-    "use strict";
+(function (context, generator) {
+  "use strict";
 
-    var env = factory.env,
-        def = factory.def,
-        deps = {
-            amd: ['lib/expect', '../modelo/modelo.js'],
-            node: ['./lib/expect', '../modelo/modelo.js'],
-            browser: ['expect', 'Modelo']
-        };
+  generator.call(
+    context,
+    'tests/modelo',
+    ['expect', 'modelo'],
+    function (expect, modelo) {
 
-    def.call(ctx, 'spec/Modelo', deps[env], function (expect, Modelo) {
+      describe('The Modelo library', function () {
 
-        describe('The Modelo library', function () {
+        it('supports the basic style of object definition', function () {
 
-            it('supports the basic style of object definition', function () {
+          var T = modelo.define(),
+            i = new T();
 
-                var T = Modelo.define(),
-                    i = new T();
+          expect(T).to.be.ok();
 
-                expect(T).to.be.ok();
+          expect(T).to.be.a('function');
 
-                expect(T).to.be.a('function');
+          expect(T.extend).to.be.a('function');
 
-                expect(T.extend).to.be.a('function');
-
-                expect(i).to.be.a(T);
-
-            });
-
-            it('optionally supports the new keyword', function () {
-
-                var T = new Modelo(),
-                    i = new T();
-
-                expect(T).to.be.ok();
-
-                expect(T).to.be.a('function');
-
-                expect(T.extend).to.be.a('function');
-
-                expect(i).to.be.a(T);
-
-            });
-
-            it('supports the constructor style of object definition', function () {
-
-                var T = Modelo.define(function (options) {
-                    this.name = options.name || 'Juan Pérez';
-                }),
-                    i = new T();
-
-                expect(i).to.be.ok();
-
-                expect(i.name).to.be('Juan Pérez');
-
-                i = new T({name: 'Juan Pueblo'});
-
-                expect(i.name).to.be('Juan Pueblo');
-
-            });
-
-            it('supports the mix-in style of object definition', function () {
-
-                var Person,
-                    Talker,
-                    Walker,
-                    Customer,
-                    test_customer;
-
-                Person = Modelo.define(function (options) {
-                    this.name = options.name || 'Juan Pérez';
-                });
-
-                Person.prototype.hello = function () {
-                    return "Hello " + this.name + "!";
-                };
-
-                Talker = Modelo.define(function (options) {
-                    this.language = options.language || 'ES';
-                });
-
-                Talker.prototype.speak = function () {
-                    if (this.language === 'EN') {
-                        return "Hello.";
-                    }
-
-                    if (this.language === 'ES') {
-                        return "Hola.";
-                    }
-
-                    return "...";
-                };
-
-                Walker = Modelo.define(function (options) {
-                    this.legs = options.legs || 2;
-                });
-
-                Walker.prototype.walk = function () {
-                    return "These " + this.legs + " boots were made for walkin'.";
-                };
-
-                Customer = Modelo.define(Person, Talker, Walker);
-
-                expect(Customer.prototype.hello).to.be.a('function');
-                expect(Customer.prototype.speak).to.be.a('function');
-                expect(Customer.prototype.walk).to.be.a('function');
-
-                test_customer = new Customer();
-
-                expect(test_customer).to.be.a(Customer);
-
-                expect(test_customer.hello()).to.be('Hello Juan Pérez!');
-                expect(test_customer.speak()).to.be('Hola.');
-                expect(test_customer.walk()).to.be("These 2 boots were made for walkin'.");
-
-            });
-
-            it('can recognize inhertied objects', function () {
-
-                var Person,
-                    Talker,
-                    Walker,
-                    Customer,
-                    Empty_Mixin,
-                    Extended_Customer,
-                    test_customer,
-                    extended_test_customer;
-
-                Person = Modelo.define(function (options) {
-                    this.name = options.name || 'Juan Pérez';
-                });
-
-                Person.prototype.hello = function () {
-                    return "Hello " + this.name + "!";
-                };
-
-                Talker = Modelo.define(function (options) {
-                    this.language = options.language || 'ES';
-                });
-
-                Talker.prototype.speak = function () {
-                    if (this.language === 'EN') {
-                        return "Hello.";
-                    }
-
-                    if (this.language === 'ES') {
-                        return "Hola.";
-                    }
-
-                    return "...";
-                };
-
-                Walker = Modelo.define(function (options) {
-                    this.legs = options.legs || 2;
-                });
-
-                Walker.prototype.walk = function () {
-                    return "These " + this.legs + " boots were made for walkin'.";
-                };
-
-                Customer = Modelo.define(Person, Talker, Walker);
-
-                Empty_Mixin = Modelo.define();
-
-                Extended_Customer = Customer.extend(Empty_Mixin);
-
-                test_customer = new Customer();
-                extended_test_customer = new Extended_Customer();
-
-                expect(test_customer.isInstance(Customer)).to.be(true);
-                expect(test_customer.isInstance(Person)).to.be(true);
-                expect(test_customer.isInstance(Talker)).to.be(true);
-                expect(test_customer.isInstance(Walker)).to.be(true);
-                expect(test_customer.isInstance(function () {})).to.be(false);
-
-                expect(extended_test_customer.isInstance(Customer)).to.be(true);
-                expect(extended_test_customer.isInstance(Empty_Mixin)).to.be(true);
-                expect(extended_test_customer.isInstance(Person)).to.be(true);
-                expect(extended_test_customer.isInstance(Walker)).to.be(true);
-                expect(extended_test_customer.isInstance(Talker)).to.be(true);
-                expect(extended_test_customer.isInstance(function () {})).to.be(false);
-
-            });
+          expect(i).to.be.a(T);
 
         });
 
-    });
+        it('optionally supports the new keyword', function () {
 
-}(this, (function (ctx) {
-    "use strict";
+          var T = new modelo(),
+            i = new T();
 
-    var currentEnvironment,
-        generator;
+          expect(T).to.be.ok();
 
-    // Check the environment to determine the dependency management strategy.
+          expect(T).to.be.a('function');
 
-    if (typeof define === "function" && !!define.amd) {
+          expect(T.extend).to.be.a('function');
 
-        currentEnvironment = 'amd';
+          expect(i).to.be.a(T);
 
-    } else if (typeof require === "function" &&
-                        module !== undefined && !!module.exports) {
+        });
 
-        currentEnvironment = 'node';
+        it('supports the constructor style of object definition', function () {
 
-    } else if (ctx.window !== undefined) {
+          var T = modelo.define(function (options) {
+              this.name = options.name || 'Juan Pérez';
+            }),
+            i = new T();
 
-        currentEnvironment = 'browser';
+          expect(i).to.be.ok();
+
+          expect(i.name).to.be('Juan Pérez');
+
+          i = new T({name: 'Juan Pueblo'});
+
+          expect(i.name).to.be('Juan Pueblo');
+
+        });
+
+        it('supports the mix-in style of object definition', function () {
+
+          var Person,
+            Talker,
+            Walker,
+            Customer,
+            test_customer;
+
+          Person = modelo.define(function (options) {
+            this.name = options.name || 'Juan Pérez';
+          });
+
+          Person.prototype.hello = function () {
+            return "Hello " + this.name + "!";
+          };
+
+          Talker = modelo.define(function (options) {
+            this.language = options.language || 'ES';
+          });
+
+          Talker.prototype.speak = function () {
+            if (this.language === 'EN') {
+              return "Hello.";
+            }
+
+            if (this.language === 'ES') {
+              return "Hola.";
+            }
+
+            return "...";
+          };
+
+          Walker = modelo.define(function (options) {
+            this.legs = options.legs || 2;
+          });
+
+          Walker.prototype.walk = function () {
+            return "These " + this.legs + " boots were made for walkin'.";
+          };
+
+          Customer = modelo.define(Person, Talker, Walker);
+
+          expect(Customer.prototype.hello).to.be.a('function');
+          expect(Customer.prototype.speak).to.be.a('function');
+          expect(Customer.prototype.walk).to.be.a('function');
+
+          test_customer = new Customer();
+
+          expect(test_customer).to.be.a(Customer);
+
+          expect(test_customer.hello()).to.be('Hello Juan Pérez!');
+          expect(test_customer.speak()).to.be('Hola.');
+          expect(test_customer.walk()).to.be("These 2 boots were made for walkin'.");
+
+        });
+
+        it('can recognize inhertied objects', function () {
+
+          var Person,
+            Talker,
+            Walker,
+            Customer,
+            Empty_Mixin,
+            Extended_Customer,
+            test_customer,
+            extended_test_customer;
+
+          Person = modelo.define(function (options) {
+            this.name = options.name || 'Juan Pérez';
+          });
+
+          Person.prototype.hello = function () {
+            return "Hello " + this.name + "!";
+          };
+
+          Talker = modelo.define(function (options) {
+            this.language = options.language || 'ES';
+          });
+
+          Talker.prototype.speak = function () {
+            if (this.language === 'EN') {
+              return "Hello.";
+            }
+
+            if (this.language === 'ES') {
+              return "Hola.";
+            }
+
+            return "...";
+          };
+
+          Walker = modelo.define(function (options) {
+            this.legs = options.legs || 2;
+          });
+
+          Walker.prototype.walk = function () {
+            return "These " + this.legs + " boots were made for walkin'.";
+          };
+
+          Customer = modelo.define(Person, Talker, Walker);
+
+          Empty_Mixin = modelo.define();
+
+          Extended_Customer = Customer.extend(Empty_Mixin);
+
+          test_customer = new Customer();
+          extended_test_customer = new Extended_Customer();
+
+          expect(test_customer.isInstance(Customer)).to.be(true);
+          expect(test_customer.isInstance(Person)).to.be(true);
+          expect(test_customer.isInstance(Talker)).to.be(true);
+          expect(test_customer.isInstance(Walker)).to.be(true);
+          expect(test_customer.isInstance(function () {
+            return null;
+          })).to.be(false);
+
+          expect(extended_test_customer.isInstance(Customer)).to.be(true);
+          expect(extended_test_customer.isInstance(Empty_Mixin)).to.be(true);
+          expect(extended_test_customer.isInstance(Person)).to.be(true);
+          expect(extended_test_customer.isInstance(Walker)).to.be(true);
+          expect(extended_test_customer.isInstance(Talker)).to.be(true);
+          expect(extended_test_customer.isInstance(function () {
+            return null;
+          })).to.be(false);
+
+        });
+
+      });
 
     }
+  );
 
-    generator = (function () {
-        switch (currentEnvironment) {
+}(this, (function (context) {
+  "use strict";
 
-        case 'amd':
+  // Ignoring the unused "name" in the Node.js definition function.
+  /*jslint unparam: true */
+  if (typeof require === "function" &&
+        module !== undefined &&
+        !!module.exports) {
 
-            // If RequireJS is used to load this module then return the global
-            // define() function.
-            return function (name, deps, mod) {
-                define(deps, mod);
-            };
+    // If this module is loaded in Node, require each of the
+    // dependencies and pass them along.
+    return function (name, deps, mod) {
 
-        case 'node':
+      var x,
+        dep_list = [];
 
-            // If this module is loaded in Node, require each of the
-            // dependencies and pass them along.
-            return function (name, deps, mod) {
+      for (x = 0; x < deps.length; x = x + 1) {
 
-                var x,
-                    dep_list = [];
+        dep_list.push(require(deps[x]));
 
-                for (x = 0; x < deps.length; x = x + 1) {
+      }
 
-                    dep_list.push(require(deps[x]));
+      module.exports = mod.apply(context, dep_list);
 
-                }
+    };
 
-                module.exports = mod.apply(this, dep_list);
+  }
+  /*jslint unparam: false */
 
-            };
+  if (context.window !== undefined) {
 
-        case 'browser':
+    // If this module is being used in a browser environment first
+    // generate a list of dependencies, run the provided definition
+    // function with the list of dependencies, and insert the returned
+    // object into the global namespace using the provided module name.
+    return function (name, deps, mod) {
 
-            // If this module is being used in a browser environment first
-            // generate a list of dependencies, run the provided definition
-            // function with the list of dependencies, and insert the returned
-            // object into the global namespace using the provided module name.
-            return function (name, deps, mod) {
+      var namespaces = name.split('/'),
+        root = context,
+        dep_list = [],
+        current_scope,
+        current_dep,
+        i,
+        x;
 
-                var namespaces = name.split('/'),
-                    root = this,
-                    dep_list = [],
-                    current_scope,
-                    current_dep,
-                    i,
-                    x;
+      for (i = 0; i < deps.length; i = i + 1) {
 
-                for (i = 0; i < deps.length; i = i + 1) {
+        current_scope = root;
+        current_dep = deps[i].split('/');
 
-                    current_scope = root;
-                    current_dep = deps[i].split('/');
+        for (x = 0; x < current_dep.length; x = x + 1) {
 
-                    for (x = 0; x < current_dep.length; x = x + 1) {
-
-                        current_scope = current_scope[current_dep[x]] || {};
-
-                    }
-
-                    dep_list.push(current_scope);
-
-                }
-
-                current_scope = root;
-                for (i = 1; i < namespaces.length; i = i + 1) {
-
-                    current_scope = current_scope[namespaces[i - 1]] || {};
-
-                }
-
-                current_scope[namespaces[i - 1]] = mod.apply(this, dep_list);
-
-            };
-
-        default:
-            throw new Error("Unrecognized environment.");
+          current_scope = current_scope[current_dep[x]] =
+                          current_scope[current_dep[x]] || {};
 
         }
 
-    }());
+        dep_list.push(current_scope);
 
+      }
 
-    return {
-        env: currentEnvironment,
-        def: generator
+      current_scope = root;
+      for (i = 1; i < namespaces.length; i = i + 1) {
+
+        current_scope = current_scope[namespaces[i - 1]] =
+                        current_scope[namespaces[i - 1]] || {};
+
+      }
+
+      current_scope[namespaces[i - 1]] = mod.apply(context, dep_list);
+
     };
+
+  }
+
+  throw new Error("Unrecognized environment.");
 
 }(this))));

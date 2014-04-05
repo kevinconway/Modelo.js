@@ -1,139 +1,105 @@
-/*global require, define, module, describe, it, xit
+/*jslint node: true, indent: 2, passfail: true, newcap: true */
+/*globals describe, it */
 
-*/
-(function (ctx, factory) {
-    "use strict";
+(function (context, generator) {
+  "use strict";
 
-    var env = factory.env,
-        def = factory.def,
-        deps = {
-            amd: ['lib/expect', '../modelo/modelo.js'],
-            node: ['./lib/expect', '../modelo/modelo.js'],
-            browser: ['expect', 'Modelo']
-        };
+  generator.call(
+    context,
+    'tests/modelo',
+    ['expect', 'modelo'],
+    function (expect, modelo) {
 
-    def.call(ctx, 'spec/Modelo', deps[env], function (expect, Modelo) {
+      describe('The Modelo interface', function () {
 
-        describe('The Modelo interface', function () {
+        it('matches the documentation', function () {
 
-            it('matches the documentation', function () {
+          expect(typeof modelo).to.be("function");
 
-                expect(typeof Modelo).to.be("function");
-
-                expect(typeof Modelo.define).to.be("function");
-
-            });
+          expect(typeof modelo.define).to.be("function");
 
         });
 
-    });
-
-}(this, (function (ctx) {
-    "use strict";
-
-    var currentEnvironment,
-        generator;
-
-    // Check the environment to determine the dependency management strategy.
-
-    if (typeof define === "function" && !!define.amd) {
-
-        currentEnvironment = 'amd';
-
-    } else if (typeof require === "function" &&
-                        module !== undefined && !!module.exports) {
-
-        currentEnvironment = 'node';
-
-    } else if (ctx.window !== undefined) {
-
-        currentEnvironment = 'browser';
+      });
 
     }
+  );
 
-    generator = (function () {
-        switch (currentEnvironment) {
+}(this, (function (context) {
+  "use strict";
 
-        case 'amd':
+  // Ignoring the unused "name" in the Node.js definition function.
+  /*jslint unparam: true */
+  if (typeof require === "function" &&
+        module !== undefined &&
+        !!module.exports) {
 
-            // If RequireJS is used to load this module then return the global
-            // define() function.
-            return function (name, deps, mod) {
-                define(deps, mod);
-            };
+    // If this module is loaded in Node, require each of the
+    // dependencies and pass them along.
+    return function (name, deps, mod) {
 
-        case 'node':
+      var x,
+        dep_list = [];
 
-            // If this module is loaded in Node, require each of the
-            // dependencies and pass them along.
-            return function (name, deps, mod) {
+      for (x = 0; x < deps.length; x = x + 1) {
 
-                var x,
-                    dep_list = [];
+        dep_list.push(require(deps[x]));
 
-                for (x = 0; x < deps.length; x = x + 1) {
+      }
 
-                    dep_list.push(require(deps[x]));
+      module.exports = mod.apply(context, dep_list);
 
-                }
+    };
 
-                module.exports = mod.apply(this, dep_list);
+  }
+  /*jslint unparam: false */
 
-            };
+  if (context.window !== undefined) {
 
-        case 'browser':
+    // If this module is being used in a browser environment first
+    // generate a list of dependencies, run the provided definition
+    // function with the list of dependencies, and insert the returned
+    // object into the global namespace using the provided module name.
+    return function (name, deps, mod) {
 
-            // If this module is being used in a browser environment first
-            // generate a list of dependencies, run the provided definition
-            // function with the list of dependencies, and insert the returned
-            // object into the global namespace using the provided module name.
-            return function (name, deps, mod) {
+      var namespaces = name.split('/'),
+        root = context,
+        dep_list = [],
+        current_scope,
+        current_dep,
+        i,
+        x;
 
-                var namespaces = name.split('/'),
-                    root = this,
-                    dep_list = [],
-                    current_scope,
-                    current_dep,
-                    i,
-                    x;
+      for (i = 0; i < deps.length; i = i + 1) {
 
-                for (i = 0; i < deps.length; i = i + 1) {
+        current_scope = root;
+        current_dep = deps[i].split('/');
 
-                    current_scope = root;
-                    current_dep = deps[i].split('/');
+        for (x = 0; x < current_dep.length; x = x + 1) {
 
-                    for (x = 0; x < current_dep.length; x = x + 1) {
-
-                        current_scope = current_scope[current_dep[x]] || {};
-
-                    }
-
-                    dep_list.push(current_scope);
-
-                }
-
-                current_scope = root;
-                for (i = 1; i < namespaces.length; i = i + 1) {
-
-                    current_scope = current_scope[namespaces[i - 1]] || {};
-
-                }
-
-                current_scope[namespaces[i - 1]] = mod.apply(this, dep_list);
-
-            };
-
-        default:
-            throw new Error("Unrecognized environment.");
+          current_scope = current_scope[current_dep[x]] =
+                          current_scope[current_dep[x]] || {};
 
         }
 
-    }());
+        dep_list.push(current_scope);
 
+      }
 
-    return {
-        env: currentEnvironment,
-        def: generator
+      current_scope = root;
+      for (i = 1; i < namespaces.length; i = i + 1) {
+
+        current_scope = current_scope[namespaces[i - 1]] =
+                        current_scope[namespaces[i - 1]] || {};
+
+      }
+
+      current_scope[namespaces[i - 1]] = mod.apply(context, dep_list);
+
     };
+
+  }
+
+  throw new Error("Unrecognized environment.");
 
 }(this))));
