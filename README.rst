@@ -4,7 +4,7 @@ Modelo.js
 
 **A cross-platform JavaScript object inheritance utility.**
 
-.. image:: https://travis-ci.org/kevinconway/Modelo.js.png
+.. image:: https://travis-ci.org/kevinconway/Modelo.js.png?branch=master
     :target: https://travis-ci.org/kevinconway/Modelo.js
     :alt: Current Build Status
 
@@ -120,8 +120,7 @@ Testing
 -------
 
 Mocha plus expect. All tests and functionality must run in Node.js and the
-browser. Copies of the test libraries are bundled with the project to support
-a browser based test runner.
+browser.
 
 Contributor's Agreement
 -----------------------
