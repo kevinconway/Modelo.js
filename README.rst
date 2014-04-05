@@ -24,7 +24,7 @@ Show Me
 
     var Animal, Lion, Eagle, Griffin, myPet;
 
-    Animal = Modelo.define();
+    Animal = modelo.define();
 
     Lion = Animal.extend();
     Lion.prototype.roar = function () { console.log("Roar"); };
@@ -33,7 +33,7 @@ Show Me
         this.wingSpan = options.wingSpan || "2 Feet";
     })
 
-    Griffin = Modelo.define(Lion, Eagle);
+    Griffin = modelo.define(Lion, Eagle);
 
     myPet = new Griffin({wingSpan: "12 Feet"});
 

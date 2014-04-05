@@ -22,7 +22,7 @@ Object Definitions
 
 Creating a basic Modelo object is simple::
 
-    var Person = Modelo.define();
+    var Person = modelo.define();
 
 Now the `Person` variable contains an object constructor that can be used
 as though it were any other JavaScript constructor. Prototype attributes can
@@ -30,7 +30,7 @@ be added and instances can be created with or without the `new` keyword::
 
     var Person, myPerson;
 
-    Person = Modelo.define();
+    Person = modelo.define();
 
     Person.prototype.log = function (message) {
 
@@ -56,7 +56,7 @@ normal, JavaScript object constructor function::
 
     Var Person, myPerson;
 
-    Person = Modelo.define(function () {
+    Person = modelo.define(function () {
 
         this.name = "Juan Pérez";
 
@@ -83,7 +83,7 @@ within a single object literal::
 
     Var Person, myPerson;
 
-    Person = Modelo.define(function (options) {
+    Person = modelo.define(function (options) {
 
         this.name = options.name || "Juan Pérez";
 
@@ -114,7 +114,7 @@ an `extend` method attached to Modelo object constructors. To illustrate::
 
     var Product, RatedProduct, widget;
 
-    Product = Modelo.define(function (options) {
+    Product = modelo.define(function (options) {
 
         this.number = options.number || 0;
         this.description = options.description || "";
@@ -168,13 +168,13 @@ shared by multiple other objects. Here is an example::
 
     var Unique, Timestamped, Person, myPerson;
 
-    Unique = Modelo.define(function (options) {
+    Unique = modelo.define(function (options) {
 
         this.unique = Math.floor(Math.random() * 1000000);
 
     });
 
-    Timestamped = Modelo.define(function (options) {
+    Timestamped = modelo.define(function (options) {
 
         this.created = new Date();
         this.modified = new Date();
@@ -187,7 +187,7 @@ shared by multiple other objects. Here is an example::
 
     };
 
-    Person = Modelo.define(Unique, Timestamped, function (options) {
+    Person = modelo.define(Unique, Timestamped, function (options) {
 
         this.name = options.name || "Juan Pérez";
 
@@ -224,10 +224,10 @@ return true or false based on what it finds. As a trivial example::
 
     var Unique, Timestamped, Product, RatedProduct, myProduct;
 
-    Unique = Modelo.define();
-    Timestamped = Modelo.define();
+    Unique = modelo.define();
+    Timestamped = modelo.define();
 
-    Product = Modelo.define(Unique, Timestamped);
+    Product = modelo.define(Unique, Timestamped);
 
     RatedProduct = Product.extend();
 
@@ -250,17 +250,17 @@ Exports
 The modelo.js library exports a function that generates Modelo objects. A proxy
 for this function has been created as the root export for ease of use::
 
-    var Modelo = require('modelo');
+    var modelo = require('modelo');
 
-    typeof Modelo === "function"; // true
+    typeof modelo === "function"; // true
 
-    typeof Modelo.define === "function"; // true
+    typeof modelo.define === "function"; // true
 
-In a browser, the modelo.js library is loaded in the global `Modelo` object::
+In a browser, the modelo.js library is loaded in the global `modelo` object::
 
-    typeof Modelo === "function"; // true
+    typeof modelo === "function"; // true
 
-    typeof Modelo.define === "function"; // true
+    typeof modelo.define === "function"; // true
 
 define()
 --------
@@ -275,7 +275,7 @@ prototype in the event of a conflict.
 
 ::
 
-    var MyObject = Modelo.define();
+    var MyObject = modelo.define();
 
 Modelo Object
 -------------
@@ -300,7 +300,7 @@ current Modelo object is always passed in as the first argument. A call to::
 
 is equivalent to::
 
-    Modelo.define(MyObject);
+    modelo.define(MyObject);
 
 isInstance(parent)
 ^^^^^^^^^^^^^^^^^^
