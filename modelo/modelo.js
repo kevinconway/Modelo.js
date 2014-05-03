@@ -54,15 +54,16 @@ SOFTWARE.
           context so all references to 'this' are directed at the new
           instance being created.
         */
-        Modelo = function (options) {
+        Modelo = function () {
 
-          var y;
+          var y,
+            cArgs = Array.prototype.slice.call(arguments);
 
-          options = options !== undefined ? options : {};
+          cArgs[0] = cArgs[0] !== undefined ? cArgs[0] : {};
 
           for (y = 0; y < constructors.length; y = y + 1) {
 
-            constructors[y].call(this, options);
+            constructors[y].apply(this, cArgs);
 
           }
 
