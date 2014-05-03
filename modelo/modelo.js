@@ -58,7 +58,7 @@ SOFTWARE.
 
           var y;
 
-          options = options || {};
+          options = options !== undefined ? options : {};
 
           for (y = 0; y < constructors.length; y = y + 1) {
 
@@ -140,7 +140,7 @@ SOFTWARE.
 
               myInstance.isInstance(MyConstructor); // true
 
-          It would be difficult to create an inheritance chain to deep
+          It would be difficult to create an inheritance chain so deep
           and complex that this method would cause any significant
           disruption of runtime. However, it's worth noting that it is
           a recursive function and will always run an exhaustive search.
