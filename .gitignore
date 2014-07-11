@@ -26,3 +26,4 @@ node_modules
 
 # Libs downloaded for the tests
 test/lib
+build
