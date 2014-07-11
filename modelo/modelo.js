@@ -22,258 +22,169 @@ SOFTWARE.
 */
 
 /*jslint node: true, indent: 2, passfail: true */
+"use strict";
 
-(function (context, generator) {
-  "use strict";
+var define;
 
-  generator.call(
-    context,
-    'modelo',
-    [],
-    function () {
+define = function () {
 
-      var define;
+  var constructors = Array.prototype.slice.call(arguments),
+    Modelo,
+    x,
+    p;
 
-      define = function () {
+  /*
+    Here the new constructor is built. As each new instance is
+    built the Modelo constructor will iterate over the constructors
+    given to 'define' and call them in the current context. This
+    allows for a Modelo to accept multiple constructors and process
+    them in a deterministic way.
 
-        var constructors = Array.prototype.slice.call(arguments),
-          Modelo,
-          x,
-          p;
+    Constructors can be any function, including other Modelo
+    constructors. There are no restrictions placed on what the
+    given functions can do. Each function is bound to the current
+    context so all references to 'this' are directed at the new
+    instance being created.
+  */
+  Modelo = function () {
 
-        /*
-          Here the new constructor is built. As each new instance is
-          built the Modelo constructor will iterate over the constructors
-          given to 'define' and call them in the current context. This
-          allows for a Modelo to accept multiple constructors and process
-          them in a deterministic way.
+    var y,
+      cArgs = Array.prototype.slice.call(arguments);
 
-          Constructors can be any function, including other Modelo
-          constructors. There are no restrictions placed on what the
-          given functions can do. Each function is bound to the current
-          context so all references to 'this' are directed at the new
-          instance being created.
-        */
-        Modelo = function () {
+    cArgs[0] = cArgs[0] !== undefined ? cArgs[0] : {};
 
-          var y,
-            cArgs = Array.prototype.slice.call(arguments);
+    for (y = 0; y < constructors.length; y = y + 1) {
 
-          cArgs[0] = cArgs[0] !== undefined ? cArgs[0] : {};
-
-          for (y = 0; y < constructors.length; y = y + 1) {
-
-            constructors[y].apply(this, cArgs);
-
-          }
-
-        };
-
-        /*
-          Here the 'prototype' attribute of each given constructor is
-          processed. Every attribute directly attached to the 'prototype'
-          of a constructor is grafted on to the prototype of the new
-          Modelo constructor.
-        */
-        for (x = 0; x < constructors.length; x = x + 1) {
-
-          for (p in constructors[x].prototype) {
-
-            if (constructors[x].prototype.hasOwnProperty(p)) {
-
-              Modelo.prototype[p] = constructors[x].prototype[p];
-
-            }
-
-          }
-
-        }
-
-        /*
-          The 'extend' is attached directly to the constructor to make it
-          similar to a class method. It simply wraps a new call to
-          'define' and adds the current 'Modelo' constructor as the first
-          argument.
-
-          This provides a slightly easier way to inherity from a given
-          Modelo. The same behaviour, however, can be achieved by calling
-          'define' with the target Modelo as the first argument. The
-          following snippets, for example, are equivalent:
-
-              var MyThing = Modelo.define(),
-                  MySubThing = MyThing.extend();
-
-              var MyThing = Modelo.define(),
-                  MySubThing = Modelo.define(MyThing);
-
-        */
-        Modelo.extend = function () {
-
-          var extensions = Array.prototype.slice.call(arguments);
-
-          extensions.splice(0, 0, Modelo);
-
-          return define.apply({}, extensions);
-
-        };
-
-        /*
-          This utility method determines whether or not a given instance
-          is derived from a given constructor.
-
-          To provide this facility, the method will first compare the
-          identity of the provided constructor against that of the
-          Modelo that produced the instance. For example:
-
-              var MyThing = Modelo.define(),
-                  myInstance = new MyThing();
-
-              myInstance.isInstance(MyThing); // true
-
-          Next it will compare the given constructor to all the
-          constructors given at the time of the Modelo definition and
-          recursively call 'isInstance' on those constructors if
-          applicable:
-
-              var MyConstructor = function () {},
-                  MyThing = Modelo.define(MyConstructor),
-                  myInstance = new MyThing();
-
-              myInstance.isInstance(MyConstructor); // true
-
-          It would be difficult to create an inheritance chain so deep
-          and complex that this method would cause any significant
-          disruption of runtime. However, it's worth noting that it is
-          a recursive function and will always run an exhaustive search.
-        */
-        Modelo.prototype.isInstance = function (f) {
-
-          var z;
-
-          if (f === Modelo) {
-
-            return true;
-
-          }
-
-          for (z = 0; z < constructors.length; z = z + 1) {
-
-            if (f === constructors[z]) {
-
-              return true;
-
-            }
-
-            if (!!constructors[z].prototype.isInstance &&
-                  constructors[z].prototype.isInstance(f)) {
-
-              return true;
-
-            }
-
-          }
-
-          return false;
-
-        };
-
-        return Modelo;
-
-      };
-
-      /*
-        This circular reference helps provide a more flexible interface
-        and allows for all of the following calls to function identically:
-
-            var MyThing = Modelo();
-
-            var MyThing = new Modelo();
-
-            var MyThing = Modelo.define();
-
-            var MyThing = new Modelo.define();
-      */
-      define.define = define;
-
-      return define;
+      constructors[y].apply(this, cArgs);
 
     }
-  );
-}(this, (function (context) {
-  "use strict";
 
-  // Ignoring the unused "name" in the Node.js definition function.
-  /*jslint unparam: true */
-  if (typeof require === "function" &&
-        module !== undefined &&
-        !!module.exports) {
+  };
 
-    // If this module is loaded in Node, require each of the
-    // dependencies and pass them along.
-    return function (name, deps, mod) {
+  /*
+    Here the 'prototype' attribute of each given constructor is
+    processed. Every attribute directly attached to the 'prototype'
+    of a constructor is grafted on to the prototype of the new
+    Modelo constructor.
+  */
+  for (x = 0; x < constructors.length; x = x + 1) {
 
-      var x,
-        dep_list = [];
+    for (p in constructors[x].prototype) {
 
-      for (x = 0; x < deps.length; x = x + 1) {
+      if (constructors[x].prototype.hasOwnProperty(p)) {
 
-        dep_list.push(require(deps[x]));
+        Modelo.prototype[p] = constructors[x].prototype[p];
 
       }
 
-      module.exports = mod.apply(context, dep_list);
-
-    };
-
-  }
-  /*jslint unparam: false */
-
-  if (context.window !== undefined) {
-
-    // If this module is being used in a browser environment first
-    // generate a list of dependencies, run the provided definition
-    // function with the list of dependencies, and insert the returned
-    // object into the global namespace using the provided module name.
-    return function (name, deps, mod) {
-
-      var namespaces = name.split('/'),
-        root = context,
-        dep_list = [],
-        current_scope,
-        current_dep,
-        i,
-        x;
-
-      for (i = 0; i < deps.length; i = i + 1) {
-
-        current_scope = root;
-        current_dep = deps[i].split('/');
-
-        for (x = 0; x < current_dep.length; x = x + 1) {
-
-          current_scope = current_scope[current_dep[x]] =
-                          current_scope[current_dep[x]] || {};
-
-        }
-
-        dep_list.push(current_scope);
-
-      }
-
-      current_scope = root;
-      for (i = 1; i < namespaces.length; i = i + 1) {
-
-        current_scope = current_scope[namespaces[i - 1]] =
-                        current_scope[namespaces[i - 1]] || {};
-
-      }
-
-      current_scope[namespaces[i - 1]] = mod.apply(context, dep_list);
-
-    };
+    }
 
   }
 
-  throw new Error("Unrecognized environment.");
+  /*
+    The 'extend' is attached directly to the constructor to make it
+    similar to a class method. It simply wraps a new call to
+    'define' and adds the current 'Modelo' constructor as the first
+    argument.
 
-}(this))));
+    This provides a slightly easier way to inherity from a given
+    Modelo. The same behaviour, however, can be achieved by calling
+    'define' with the target Modelo as the first argument. The
+    following snippets, for example, are equivalent:
+
+        var MyThing = Modelo.define(),
+            MySubThing = MyThing.extend();
+
+        var MyThing = Modelo.define(),
+            MySubThing = Modelo.define(MyThing);
+
+  */
+  Modelo.extend = function () {
+
+    var extensions = Array.prototype.slice.call(arguments);
+
+    extensions.splice(0, 0, Modelo);
+
+    return define.apply({}, extensions);
+
+  };
+
+  /*
+    This utility method determines whether or not a given instance
+    is derived from a given constructor.
+
+    To provide this facility, the method will first compare the
+    identity of the provided constructor against that of the
+    Modelo that produced the instance. For example:
+
+        var MyThing = Modelo.define(),
+            myInstance = new MyThing();
+
+        myInstance.isInstance(MyThing); // true
+
+    Next it will compare the given constructor to all the
+    constructors given at the time of the Modelo definition and
+    recursively call 'isInstance' on those constructors if
+    applicable:
+
+        var MyConstructor = function () {},
+            MyThing = Modelo.define(MyConstructor),
+            myInstance = new MyThing();
+
+        myInstance.isInstance(MyConstructor); // true
+
+    It would be difficult to create an inheritance chain so deep
+    and complex that this method would cause any significant
+    disruption of runtime. However, it's worth noting that it is
+    a recursive function and will always run an exhaustive search.
+  */
+  Modelo.prototype.isInstance = function (f) {
+
+    var z;
+
+    if (f === Modelo) {
+
+      return true;
+
+    }
+
+    for (z = 0; z < constructors.length; z = z + 1) {
+
+      if (f === constructors[z]) {
+
+        return true;
+
+      }
+
+      if (!!constructors[z].prototype.isInstance &&
+            constructors[z].prototype.isInstance(f)) {
+
+        return true;
+
+      }
+
+    }
+
+    return false;
+
+  };
+
+  return Modelo;
+
+};
+
+/*
+  This circular reference helps provide a more flexible interface
+  and allows for all of the following calls to function identically:
+
+      var MyThing = Modelo();
+
+      var MyThing = new Modelo();
+
+      var MyThing = Modelo.define();
+
+      var MyThing = new Modelo.define();
+*/
+define.define = define;
+
+module.exports = define;
