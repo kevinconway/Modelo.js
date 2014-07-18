@@ -36,11 +36,19 @@ module.exports = function (grunt) {
     browserify: {
       dist: {
         files: {
-          'build/modelo.browser.js': ['modelo/*'],
-          'build/modelo.tests.browser.js': ['test/*.spec.js']
-        }
+          'build/modelo.browser.js': ['modelo/*']
+        },
+        options: {
+          bundleOptions: {
+            "standalone": "modelo"
+          }
+        },
       },
-      options: {
+      tests: {
+        files: {
+          'build/modelo.tests.browser.js': ['test/*.spec.js']
+        },
+        options: {}
       }
     },
     uglify: {
