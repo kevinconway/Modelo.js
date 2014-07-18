@@ -2,7 +2,7 @@
 Modelo.js
 =========
 
-**A cross-platform JavaScript object inheritance utility.**
+**A multiple inheritance utility for JavaScript.**
 
 .. image:: https://travis-ci.org/kevinconway/Modelo.js.png?branch=master
     :target: https://travis-ci.org/kevinconway/Modelo.js
@@ -22,31 +22,57 @@ Show Me
 
 .. code-block:: javascript
 
-    var Animal, Lion, Eagle, Griffin, myPet;
+    var RandomId, Rated, Base, Product, widget;
 
-    Animal = modelo.define();
+    // Generates random integer id in constructor.
+    RandomId = modelo.define(function () {
+        this.id =  Math.floor(Math.random() * 100000);
+    });
 
-    Lion = Animal.extend();
-    Lion.prototype.roar = function () { console.log("Roar"); };
+    // No special constructor. Adds a method to rate with number of stars.
+    Rated = modelo.define();
+    Rated.prototype.rate = function (stars) {
+        this.rating = stars;
+    };
 
-    Eagle = Animal.extend(function (options) {
-        this.wingSpan = options.wingSpan || "2 Feet";
-    })
+    // Common base that uses both mixins.
+    Base = modelo.define(RandomId, Rated);
 
-    Griffin = modelo.define(Lion, Eagle);
+    // Extension of Base with custom constructor.
+    Product = Base.extend(function (options) {
+        this.name = options.name;
+    });
+    // Extend a method from Base and add extra functionality.
+    Product.prototype.rate = function (stars) {
+        console.log('Rating the product!');
+        Base.prototype.rate.call(this, stars);
+    };
 
-    myPet = new Griffin({wingSpan: "12 Feet"});
+    widget = new Product({name: "widget"});
+    widget.id; // 12345
+    widget.rating; // undefined
+    widget.rate(5); // Rating the product!
+    widget.rating; // 5
 
-    myPet.roar(); // Console Output: "Roar"
-
-    myPet.wingSpan; // "12 Feet"
-
-    myPet.isInstance(Griffin); // true
-    myPet.isInstance(Eagle); // true
-    myPet.isInstance(Lion); // true
-    myPet.isInstance(Animal); // true
+    widget.isInstance(Product); // true
+    widget.isInstance(Base); // true
+    widget.isInstance(Rated); // true
+    widget.isInstance(RandomId); // true
 
 For more detailed usage guides and API specifications, see the docs directory.
+
+Why Not util.inherits?
+======================
+
+The Node.js standard library util.inherits function is a great and simple tool.
+In order to preserve the behaviour of the `instanceof` keyword it is limited
+to only single inheritance. If this is the desired behaviour then util.inherits
+should be used.
+
+This module is an attempt to provide simple support for multiple inheritance.
+Unlike util.inherits, this module (as would any attempt at multiple
+inheritance) does not preserve the behaviour of the `instanceof` keyword. This
+functionality is provided instead by the `isInstance` method shown above.
 
 Setup
 =====
@@ -63,20 +89,20 @@ Once installed, simply `require("modelo")`.
 Browser
 -------
 
-Developers working in normal browser environments can use <script> tags to load
-this package::
+This module uses browserify to create a browser compatible module. The default
+grunt workflow for this project will generate both a full and minified browser
+script in a build directory which can be included as a <script> tag::
 
-    <script src="modelo.js"></script>
+    <script src="modelo.browser.min.js"></script>
 
-There are no dependencies that must be loaded before this package.
+The package is exposed via the global name `modelo`.
 
 Tests
 -----
 
-To run the tests in Node.js use the `npm test` command.
-
-To run the tests in a browser, run the `install_libs` script in the test
-directory and then open the `runner.html` in the browser of your choice.
+Running the `npm test` command will kick off the default grunt workflow. This
+will lint using jslint, run the mocha/expect tests, generate a browser module,
+and test the browser module using PhantomJS.
 
 License
 =======
