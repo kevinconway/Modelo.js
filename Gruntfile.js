@@ -28,11 +28,6 @@ module.exports = function (grunt) {
         src: ['test/*.js']
       }
     },
-    mocha: {
-      test: {
-        src: ['test/runner.html']
-      }
-    },
     browserify: {
       dist: {
         files: {
@@ -65,25 +60,33 @@ module.exports = function (grunt) {
     shell: {
       prepareBrowserTests: {
         command: 'test/install_libs'
+      },
+      benchmark: {
+        command: function (path) {
+          return 'node ' + path;
+        }
       }
-    },
-    watch: {
-      files: [
-        'modelo/*.js',
-        '!node_modules/*'
-      ],
-      tasks: ['default'],
-    },
+    }
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-jslint');
   grunt.loadNpmTasks('grunt-mocha-test');
-  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-mocha');
   grunt.loadNpmTasks('grunt-shell');
 
-  grunt.registerTask('default', ['jslint', 'mochaTest', 'browserify', 'uglify', 'shell', 'mocha']);
+  grunt.registerTask(
+    'default',
+    [
+      'jslint',
+      'mochaTest',
+      'browserify',
+      'uglify',
+      'shell:prepareBrowserTests',
+      'shell:benchmark:benchmarks/overall/define.js',
+      'shell:benchmark:benchmarks/overall/instance.js'
+    ]
+  );
+  grunt.registerTask('check', ['jslint', 'mochaTest']);
 
 };

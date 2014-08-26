@@ -241,6 +241,36 @@ return true or false based on what it finds. As a trivial example::
 
     myProduct.isInstance(Unique);  //true
 
+Alternate Interface
+===================
+
+If preferred, this library may be used in a manner identical to the Node.js
+standard library util.inherits. All the above information, with respect to how
+the library manages inheritance, remains true while using the util.inherits
+interface. Simply pass additional bases into the inherits method rather than
+a single base.
+
+.. code-block:: javascript
+
+    function Unique() {
+        this.unique = Math.floor(Math.random() * 1000000);
+    };
+
+    function Timestamped() {
+        this.created = new Date();
+        this.modified = new Date();
+    };
+    Timestamped.prototype.modify = function () {
+        this.modified = new Date();
+    };
+
+    function Person(name) {
+        Unique.call(this);
+        Timestamped.call(this);
+        this.name = name || "Juan Pérez";
+    }
+    modelo.inherits(Person, Unique, Timestamped);
+
 API Reference
 =============
 
@@ -256,11 +286,24 @@ for this function has been created as the root export for ease of use::
 
     typeof modelo.define === "function"; // true
 
+    typeof modelo.inherits === "function"; // true
+
 In a browser, the modelo.js library is loaded in the global `modelo` object::
 
     typeof modelo === "function"; // true
 
     typeof modelo.define === "function"; // true
+
+    typeof modelo.inherits === "function"; // true
+
+inherits(child, parent, parent, ...)
+------------------------------------
+
+This function accepts a child function and any number of parent function. It
+does not return anything. Instead it modifies the child prototype in a way
+nearly identical to the Node.js util.inherits. The behaviour of leaching
+prototype attributes from multiple parent functions is identical to that of
+the 'define()' function below.
 
 define()
 --------

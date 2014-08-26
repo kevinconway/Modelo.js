@@ -11,38 +11,75 @@ Modelo.js
 What Is Modelo?
 ===============
 
-Modelo is a helper utility for JavaScript developers that provides a clean
-interface over prototypal inheritance.
+Modelo is a helper utility that provides for multiple inheritance.
 
-The interface exposed by this library supports both mix-in and "class" style
-object definitions and inheritance.
+The library exposes two basic interfaces: one that mimics the util.inherits
+function and one that does not.
 
-Show Me
-=======
+
+Inherits Example
+================
+
+.. code-block:: javascript
+
+    function RandomId() {
+        this.id = Math.floor(Math.random() * 100000);
+    }
+    function Rated() {
+        this.rating = undefined;
+    }
+    Rated.prototype.rate = function rate(stars) {
+        this.rating = stars;
+    }
+
+    function Base() {
+        RandomId.call(this);
+        Rated.call(this);
+    }
+    modelo.inherits(Base, RandomId, Rated);
+
+    function Product(name) {
+        Base.call(this);
+        this.name = name;
+    }
+    modelo.inherits(Product, Base);
+    Product.prototype.rate = function (stars) {
+        console.log('Rating the product!');
+        Base.prototype.rate.call(this, stars);
+    }
+
+    widget = new Product("widget");
+    widget.id; // 12345
+    widget.rating; // undefined
+    widget.rate(5); // Rating the product!
+    widget.rating; // 5
+
+    widget.isInstance(Product); // true
+    widget.isInstance(Base); // true
+    widget.isInstance(Rated); // true
+    widget.isInstance(RandomId); // true
+
+Define Example
+==============
 
 .. code-block:: javascript
 
     var RandomId, Rated, Base, Product, widget;
 
-    // Generates random integer id in constructor.
     RandomId = modelo.define(function () {
         this.id =  Math.floor(Math.random() * 100000);
     });
 
-    // No special constructor. Adds a method to rate with number of stars.
     Rated = modelo.define();
     Rated.prototype.rate = function (stars) {
         this.rating = stars;
     };
 
-    // Common base that uses both mixins.
     Base = modelo.define(RandomId, Rated);
 
-    // Extension of Base with custom constructor.
     Product = Base.extend(function (options) {
         this.name = options.name;
     });
-    // Extend a method from Base and add extra functionality.
     Product.prototype.rate = function (stars) {
         console.log('Rating the product!');
         Base.prototype.rate.call(this, stars);
@@ -59,20 +96,22 @@ Show Me
     widget.isInstance(Rated); // true
     widget.isInstance(RandomId); // true
 
-For more detailed usage guides and API specifications, see the docs directory.
+See the doc directory for more details.
 
-Why Not util.inherits?
-======================
+util.inherits
+=============
 
-The Node.js standard library util.inherits function is a great and simple tool.
-In order to preserve the behaviour of the `instanceof` keyword it is limited
-to only single inheritance. If this is the desired behaviour then util.inherits
-should be used.
+The Node.js standard library util.inherits is a great and simple tool for
+single inheritance. Unfortunately, it does not handle multiple base prototypes
+being passed in. Even if it did, the 'instanceof' keyword only works when
+working with single inheritance. If single inheritance is all you need then
+util.inherits is likely the tool you want.
 
-This module is an attempt to provide simple support for multiple inheritance.
-Unlike util.inherits, this module (as would any attempt at multiple
-inheritance) does not preserve the behaviour of the `instanceof` keyword. This
-functionality is provided instead by the `isInstance` method shown above.
+On the other hand, if you need/want to use multiple inheritance then this is
+the tool you want. There is, sadly, no way alter the behaviour of 'instanceof'.
+Instead, this library attaches an 'isInstance' method to each function that
+inherits from one or more other functions. The 'isInstance' method traverses
+the entire inheritance tree and return a boolean based on what it finds.
 
 Setup
 =====
@@ -102,7 +141,7 @@ Tests
 
 Running the `npm test` command will kick off the default grunt workflow. This
 will lint using jslint, run the mocha/expect tests, generate a browser module,
-and test the browser module using PhantomJS.
+generate browser tests, and run the performance benchmarks.
 
 License
 =======
