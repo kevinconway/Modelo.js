@@ -182,4 +182,58 @@ describe('The Modelo library', function () {
 
   });
 
+  it("mimics the built-in utils", function () {
+
+    function Base() {
+      this.created = true;
+    }
+    Base.prototype.test = function test() {
+      this.tested = true;
+    };
+
+    function Extension() {
+      Base.call(this);
+    }
+    modelo.inherits(Extension, Base);
+
+    var e = new Extension();
+
+    expect(e.created).to.be(true);
+    expect(e.test).to.be.ok();
+    e.test();
+    expect(e.tested).to.be(true);
+    expect(e instanceof Base).to.be(true);
+
+  });
+
+  it("expands on the built-in utils", function () {
+
+    function Base() {
+      this.created = true;
+    }
+    Base.prototype.test = function test() {
+      this.tested = true;
+    };
+    function Base2() {
+      this.multiple = true;
+    }
+
+    function Extension() {
+      Base.call(this);
+      Base2.call(this);
+    }
+    modelo.inherits(Extension, Base, Base2);
+
+    var e = new Extension();
+
+    expect(e.created).to.be(true);
+    expect(e.test).to.be.ok();
+    e.test();
+    expect(e.tested).to.be(true);
+    expect(e.isInstance(Base)).to.be(true);
+    expect(e.isInstance(Base2)).to.be(true);
+    expect(e.isInstance(Extension)).to.be(true);
+
+  });
+
 });
