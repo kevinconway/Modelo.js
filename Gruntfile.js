@@ -83,8 +83,8 @@ module.exports = function (grunt) {
       'browserify',
       'uglify',
       'shell:prepareBrowserTests',
-      'shell:benchmark:benchmarks/overall/define.js',
-      'shell:benchmark:benchmarks/overall/instance.js'
+      'shell:benchmark:benchmarks/comparisons/define.js',
+      'shell:benchmark:benchmarks/comparisons/instance.js'
     ]
   );
   grunt.registerTask('check', ['jslint', 'mochaTest']);

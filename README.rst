@@ -8,110 +8,125 @@ Modelo.js
     :target: https://travis-ci.org/kevinconway/Modelo.js
     :alt: Current Build Status
 
-What Is Modelo?
-===============
+Why?
+====
 
-Modelo is a helper utility that provides for multiple inheritance.
+Inheritance libraries today all seem to enforce the same clunky interface
+style. The only one of any merit these days is 'util.inherits' from the Node.js
+standard library. Only problem: no multiple inheritance.
 
-The library exposes two basic interfaces: one that mimics the util.inherits
-function and one that does not.
+Wouldn't it be great if 'util.inherits' supported multiple inheritance *and*
+it stayed fast too?
 
-
-Inherits Example
-================
-
-.. code-block:: javascript
-
-    function RandomId() {
-        this.id = Math.floor(Math.random() * 100000);
-    }
-    function Rated() {
-        this.rating = undefined;
-    }
-    Rated.prototype.rate = function rate(stars) {
-        this.rating = stars;
-    }
-
-    function Base() {
-        RandomId.call(this);
-        Rated.call(this);
-    }
-    modelo.inherits(Base, RandomId, Rated);
-
-    function Product(name) {
-        Base.call(this);
-        this.name = name;
-    }
-    modelo.inherits(Product, Base);
-    Product.prototype.rate = function (stars) {
-        console.log('Rating the product!');
-        Base.prototype.rate.call(this, stars);
-    }
-
-    widget = new Product("widget");
-    widget.id; // 12345
-    widget.rating; // undefined
-    widget.rate(5); // Rating the product!
-    widget.rating; // 5
-
-    widget.isInstance(Product); // true
-    widget.isInstance(Base); // true
-    widget.isInstance(Rated); // true
-    widget.isInstance(RandomId); // true
-
-Define Example
-==============
-
-.. code-block:: javascript
-
-    var RandomId, Rated, Base, Product, widget;
-
-    RandomId = modelo.define(function () {
-        this.id =  Math.floor(Math.random() * 100000);
-    });
-
-    Rated = modelo.define();
-    Rated.prototype.rate = function (stars) {
-        this.rating = stars;
-    };
-
-    Base = modelo.define(RandomId, Rated);
-
-    Product = Base.extend(function (options) {
-        this.name = options.name;
-    });
-    Product.prototype.rate = function (stars) {
-        console.log('Rating the product!');
-        Base.prototype.rate.call(this, stars);
-    };
-
-    widget = new Product({name: "widget"});
-    widget.id; // 12345
-    widget.rating; // undefined
-    widget.rate(5); // Rating the product!
-    widget.rating; // 5
-
-    widget.isInstance(Product); // true
-    widget.isInstance(Base); // true
-    widget.isInstance(Rated); // true
-    widget.isInstance(RandomId); // true
-
-See the doc directory for more details.
+That's this library. That's why it exists.
 
 util.inherits
 =============
 
-The Node.js standard library util.inherits is a great and simple tool for
-single inheritance. Unfortunately, it does not handle multiple base prototypes
-being passed in. Even if it did, the 'instanceof' keyword only works when
-working with single inheritance. If single inheritance is all you need then
-util.inherits is likely the tool you want.
+The 'modelo.inherits' function can act as a drop in replacement for
+'util.inherits'. Already have a code base that you want to start extending? No
+problem.
 
-On the other hand, if you need/want to use multiple inheritance then this is
-the tool you want. There is, sadly, no way alter the behaviour of 'instanceof'.
-Instead, this library attaches an 'isInstance' method to each function that
-inherits from one or more other functions. The 'isInstance' method traverses
-the entire inheritance tree and return a boolean based on what it finds.
+.. code-block:: javascript
+
+    var modelo = require('modelo');
+
+    function Base() {
+        // Base object constructor
+    }
+    Base.prototype.baseMethod = function baseMethod() {
+        console.log('Method from base object.');
+    }
+
+    function Extension() {
+        // Sub-object constructor
+    }
+    // util.inherits(Extension, Base);
+    modelo.inherits(Example, Base);
+
+    new Extension() instanceof Base; // true
+
+Multiple Inheritance
+====================
+
+Once you need to extend multiple base objects, just put more base objects in
+the call to 'inherits'.
+
+.. code-block:: javascript
+
+    var modelo = require('modelo');
+
+    function MixinOne() {}
+    function MixinTwo() {}
+
+    function Combined() {}
+    modelo.inherits(Combined, MixinOne, MixinTwo);
+
+    var instance = new Combined();
+
+    instance.isInstance(Combined); // true
+    instance.isInstance(MixinOne); // true
+    instance.isInstance(MixinTwo); // true
+
+Unfortunately, there is no way to make 'instanceof' work with multiple
+inheritance. To replace it, simply use the 'isInstance' method that gets added
+to your instances. It will return true for any base object in the inheritance
+tree.
+
+You Said Something About Fast?
+==============================
+
+All inheritance libraries have their cost. Several market themselves on their
+performance, however. Here is how this library stacks up against some of the
+competition:
+
+Object Definition
+-----------------
+
+This test attempts to replicate the same inheritance chain in each library and
+compare the amount of time it takes to create the object prototypes and a
+single instance. The full source of this profile is in the benchmarks
+directory, but the multiple inheritance example from the above section is a
+rough outline of what the test performs minus the 'isInstance' checks. The
+results:
+
++------------+------------+
+| Name       | % Slower   |
++============+============+
+| Fiber      | 0.0000 %   |
++------------+------------+
+| augment    | 66.804 %   |
++------------+------------+
+| Klass      | 72.037 %   |
++------------+------------+
+| Modelo     | 73.278 %   |
++------------+------------+
+
+Admittedly, this library is not the fastest when it comes to applying the
+inheritance to the object prototype.  However, prototypes are only defined
+once. A far more realistic measurement is instance creation time as that will
+happen far more often than prototype definitions. The results for that
+measurement are:
+
++------------+------------+
+| Name       | % Slower   |
++============+============+
+| Modelo     | 0.0000 %   |
++------------+------------+
+| Fiber      | 40.967 %   |
++------------+------------+
+| augment    | 42.075 %   |
++------------+------------+
+| Klass      | 162.89 %   |
++------------+------------+
+
+Modelo excels here by not wrapping the object constructor which allows
+instances to be created at native speeds. The only cost to using Modelo is in
+the logic used to copy attributes from inherited prototypes.
+
+The above values only represent the percent difference in runtimes. For more
+data run the default grunt task. It will run the benchmarks and show expanded
+results.
 
 Setup
 =====
