@@ -5,6 +5,7 @@ var util = require('util'),
   Benchmark = require('benchmark'),
   suite = new Benchmark.Suite("Instance Creation"),
   Modelo_4_0_2 = require('../versions/4.0.2'),
+  Modelo_4_1_0 = require('../versions/4.1.0'),
   Modelo_Current = require('../versions/current'),
   klass = require('klass'),
   augment = require('augment'),
@@ -66,6 +67,40 @@ function TestModeloInherits(impl) {
     this.name = options.name;
   }
   impl.inherits(Product, Base);
+  Product.prototype.rate = function rate(stars) {
+    return Base.prototype.rate.call(this, stars);
+  };
+
+  return function () {
+    return new Product({"name": "widget"});
+  };
+
+}
+
+function TestUtilInherits() {
+
+  function RandomId() {
+    this.id = 4;
+  }
+  function Rated() {
+    RandomId.call(this);
+    this.rating = undefined;
+  }
+  util.inherits(Rated, RandomId);
+  Rated.prototype.rate = function rate(stars) {
+    this.rating = stars;
+  };
+
+  function Base() {
+    Rated.call(this);
+  }
+  util.inherits(Base, Rated);
+
+  function Product(options) {
+    Base.call(this);
+    this.name = options.name;
+  }
+  util.inherits(Product, Base);
   Product.prototype.rate = function rate(stars) {
     return Base.prototype.rate.call(this, stars);
   };
@@ -151,7 +186,7 @@ function TestAugment() {
 
 function TestFiber() {
 
-  var RandomId, Rated, Base, Product, widget;
+  var RandomId, Rated, Base, Product;
 
   RandomId = function () {
     return {
@@ -204,6 +239,11 @@ suite.add(
 );
 
 suite.add(
+  'Modelo-v4.1.0: define()',
+  new TestModeloDefine(Modelo_4_1_0)
+);
+
+suite.add(
   'Modelo-vCurrent: define()',
   new TestModeloDefine(Modelo_Current)
 );
@@ -211,6 +251,11 @@ suite.add(
 suite.add(
   'Modelo-vCurrent: inherits()',
   new TestModeloInherits(Modelo_Current)
+);
+
+suite.add(
+  'Modelo-v4.1.0: inherits()',
+  new TestModeloInherits(Modelo_4_1_0)
 );
 
 suite.add(
@@ -227,6 +272,12 @@ suite.add(
   'fiber',
   new TestFiber()
 );
+
+suite.add(
+  'util.inherits',
+  new TestUtilInherits()
+);
+
 
 suite.on('complete', print);
 

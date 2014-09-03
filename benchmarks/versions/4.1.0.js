@@ -117,46 +117,41 @@ function define() {
 
 }
 
-function inherits(child, parent) {
+function inherits() {
 
-  var constructors = [parent],
-    length,
+  var constructors = arrayFromArguments.apply(undefined, arguments),
+    to = constructors.shift(),
+    length = constructors.length,
     x;
 
-  // This method brought to you by Node.js util module.
-  // https://github.com/joyent/node/blob/master/lib/util.js
-  child.prototype = Object.create(
-    parent.prototype,
-    {
-      constructor: {
-        value: child,
-        enumerable: false,
-        writable: true,
-        configurable: true
+  if (length > 0) {
+    // This method brought to you by Node.js util module.
+    // https://github.com/joyent/node/blob/master/lib/util.js
+    to.prototype = Object.create(
+      constructors[length - 1].prototype,
+      {
+        constructor: {
+          value: to,
+          enumerable: false,
+          writable: true,
+          configurable: true
+        }
       }
-    }
-  );
-
-  if (arguments.length > 2) {
-
-    constructors = arrayFromArguments.apply(undefined, arguments);
-    constructors.shift();
-    length = constructors.length;
-
-    for (x = 1; x < length; x = x + 1) {
-      copyPrototype(child, constructors[x]);
-    }
-
+    );
   }
 
-  child.prototype.isInstance = isInstance.bind(
+  for (x = 0; x < length; x = x + 1) {
+    copyPrototype(to, constructors[x]);
+  }
+
+  to.prototype.isInstance = isInstance.bind(
     undefined,
-    child,
+    to,
     constructors
   );
-  child.extend = extend.bind(undefined, child);
+  to.extend = extend.bind(undefined, to);
 
-  return child;
+  return to;
 
 }
 

@@ -87,46 +87,71 @@ This test attempts to replicate the same inheritance chain in each library and
 compare the amount of time it takes to create the object prototypes and a
 single instance. The full source of this profile is in the benchmarks
 directory, but the multiple inheritance example from the above section is a
-rough outline of what the test performs minus the 'isInstance' checks. The
-results:
+rough outline of what the test performs minus the 'isInstance' checks. This is
+the typical benchmark you will see when looking at comparisons of inheritance
+libraries. The results:
 
-+------------+------------+
-| Name       | % Slower   |
-+============+============+
-| Fiber      | 0.0000 %   |
-+------------+------------+
-| augment    | 66.804 %   |
-+------------+------------+
-| Klass      | 72.037 %   |
-+------------+------------+
-| Modelo     | 73.278 %   |
-+------------+------------+
++---------------+------------+
+| Name          | % Slower   |
++===============+============+
+| Fiber         | 0.0000 %   |
++---------------+------------+
+| util.inherits | 24.010 %   |
++---------------+------------+
+| augment       | 64.601 %   |
++---------------+------------+
+| Modelo        | 65.594 %   |
++---------------+------------+
+| Klass         | 74.658 %   |
++---------------+------------+
 
-Admittedly, this library is not the fastest when it comes to applying the
-inheritance to the object prototype.  However, prototypes are only defined
-once. A far more realistic measurement is instance creation time as that will
-happen far more often than prototype definitions. The results for that
-measurement are:
+The `Fiber <https://github.com/linkedin/Fiber>`_ library is the clear winner
+with a 24% difference in run-time cost from the Node.js 'util.inherits'.
+Considering the implementation of 'util.inherits' is effectively a two line
+wrapper around the 'Object.create' built-in, it's quite a surprise that Fiber
+is *that* much faster. Now, the *actual* difference between Fiber and
+'util.inherits' is something on the order of ~0.00008 seconds which, frankly,
+is inconsequential.
 
-+------------+------------+
-| Name       | % Slower   |
-+============+============+
-| Modelo     | 0.0000 %   |
-+------------+------------+
-| Fiber      | 40.967 %   |
-+------------+------------+
-| augment    | 42.075 %   |
-+------------+------------+
-| Klass      | 162.89 %   |
-+------------+------------+
+In fact, even the difference between Fiber and the bottom three libraries
+is inconsequential, not because the difference is not statistically
+significant but, because this benchmark only represents the time required to
+define a "class" or object prototype. This is something that happens, at most,
+once for each object defined in a code base. These run-time costs simply do not
+matter unless your code base generates hundreds of thousands of "class"
+definitions.
 
-Modelo excels here by not wrapping the object constructor which allows
-instances to be created at native speeds. The only cost to using Modelo is in
-the logic used to copy attributes from inherited prototypes.
+A far more realistic measurement of overhead is time it takes to create an
+instance of an object defined using an inheritance library as creating
+instances necessarily happens far more often than defining the prototype:
 
-The above values only represent the percent difference in runtimes. For more
++---------------+------------+
+| Name          | % Slower   |
++===============+============+
+| Modelo        | 0.0000 %   |
++---------------+------------+
+| util.inherits | 3.4355 %   |
++---------------+------------+
+| Fiber         | 45.017 %   |
++---------------+------------+
+| augment       | 48.284 %   |
++---------------+------------+
+| Klass         | 161.79 %   |
++---------------+------------+
+
+Again, the difference between the top two is on the order of ~0.000000002
+seconds which, again, is inconsequential unless the number of instances pushes
+into the billions. This time, however, Fiber has fallen to third at a fairly
+large 45% difference in run-time cost.
+
+Modelo and 'util.inherits' excel here by not wrapping the object constructors
+which allows instances to be created at native speeds. The only cost to using
+Modelo is in the logic used to copy attributes from inherited prototypes.
+
+The above values only display the percent difference in runtimes. For more
 data run the default grunt task. It will run the benchmarks and show expanded
-results.
+results. The source for the benchmarks is in the benchmarks directory. Please
+open an issue on GitHub if you find a flaw in any of the benchmarks.
 
 Setup
 =====
