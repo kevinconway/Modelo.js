@@ -82,11 +82,12 @@ module.exports = function (grunt) {
       'mochaTest',
       'browserify',
       'uglify',
-      'shell:prepareBrowserTests',
-      'shell:benchmark:benchmarks/comparisons/define.js',
-      'shell:benchmark:benchmarks/comparisons/instance.js'
+      'shell:prepareBrowserTests'
     ]
   );
-  grunt.registerTask('check', ['jslint', 'mochaTest']);
+  grunt.registerTask('benchmark', [
+    'shell:benchmark:benchmarks/comparisons/define.js',
+    'shell:benchmark:benchmarks/comparisons/instance.js'
+  ]);
 
 };

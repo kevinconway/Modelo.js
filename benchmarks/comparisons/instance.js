@@ -38,7 +38,9 @@ function TestModeloDefine(impl) {
   };
 
   return function () {
-    return new Product({"name": "widget"});
+    var p = new Product({"name": "widget"});
+    p.rate(12);
+    return p;
   };
 
 }
@@ -72,7 +74,9 @@ function TestModeloInherits(impl) {
   };
 
   return function () {
-    return new Product({"name": "widget"});
+    var p = new Product({"name": "widget"});
+    p.rate(12);
+    return p;
   };
 
 }
@@ -106,7 +110,9 @@ function TestUtilInherits() {
   };
 
   return function () {
-    return new Product({"name": "widget"});
+    var p = new Product({"name": "widget"});
+    p.rate(12);
+    return p;
   };
 
 }
@@ -138,7 +144,9 @@ function TestKlass() {
   });
 
   return function () {
-    return new Product({"name": "widget"});
+    var p = new Product({"name": "widget"});
+    p.rate(12);
+    return p;
   };
 
 }
@@ -179,7 +187,9 @@ function TestAugment() {
   });
 
   return function () {
-    return new Product({"name": "widget"});
+    var p = new Product({"name": "widget"});
+    p.rate(12);
+    return p;
   };
 
 }
@@ -228,7 +238,9 @@ function TestFiber() {
   });
 
   return function () {
-    return new Product({"name": "widget"});
+    var p = new Product({"name": "widget"});
+    p.rate(12);
+    return p;
   };
 
 }
