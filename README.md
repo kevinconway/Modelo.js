@@ -1,15 +1,8 @@
-=========
-Modelo.js
-=========
+# Modelo.js [![Current Build Status](https://travis-ci.org/kevinconway/Modelo.js.png?branch=master)](https://travis-ci.org/kevinconway/Modelo.js)
 
 **A multiple inheritance utility for JavaScript.**
 
-.. image:: https://travis-ci.org/kevinconway/Modelo.js.png?branch=master
-    :target: https://travis-ci.org/kevinconway/Modelo.js
-    :alt: Current Build Status
-
-Why?
-====
+## Why?
 
 Inheritance libraries today all seem to enforce the same clunky interface
 style. The only one of any merit these days is 'util.inherits' from the Node.js
@@ -20,14 +13,13 @@ it stayed fast too?
 
 That's this library. That's why it exists.
 
-util.inherits
-=============
+## util.inherits
 
 The 'modelo.inherits' function can act as a drop in replacement for
 'util.inherits'. Already have a code base that you want to start extending? No
 problem.
 
-.. code-block:: javascript
+```javascript
 
     var modelo = require('modelo');
 
@@ -46,13 +38,14 @@ problem.
 
     new Extension() instanceof Base; // true
 
-Multiple Inheritance
-====================
+```
+
+## Multiple Inheritance
 
 Once you need to extend multiple base objects, just put more base objects in
 the call to 'inherits'.
 
-.. code-block:: javascript
+```javascript
 
     var modelo = require('modelo');
 
@@ -68,130 +61,119 @@ the call to 'inherits'.
     instance.isInstance(MixinOne); // true
     instance.isInstance(MixinTwo); // true
 
+```
+
 Unfortunately, there is no way to make 'instanceof' work with multiple
 inheritance. To replace it, simply use the 'isInstance' method that gets added
 to your instances. It will return true for any base object in the inheritance
 tree.
 
-You Said Something About Fast?
-==============================
+## You Said Something About Fast?
 
-All inheritance libraries have their cost. Several market themselves on their
-performance, however. Here is how this library stacks up against some of the
-competition:
+All inheritance libraries have their cost. When the overhead in question affects
+the speed of object definition and creation, though, that cost must be kept
+to a minimum. Here is how this library compares to the competition:
 
-Object Definition
------------------
+### Object Definition
 
-This test attempts to replicate the same inheritance chain in each library and
-compare the amount of time it takes to create the object prototypes and a
-single instance. The full source of this profile is in the benchmarks
-directory, but the multiple inheritance example from the above section is a
-rough outline of what the test performs minus the 'isInstance' checks. This is
-the typical benchmark you will see when looking at comparisons of inheritance
-libraries. The results:
+The typical benchmark you will see while researching inheritance tools is one
+that measures the cost of an object prototype, or class, definition followed by
+the creation of a single instance. The following results are based on a test
+which does just that. Each library produces an equivalent inheritance tree and
+spawns an instance. The full source of the benchmark can be found in
+'benchmarks/comparisons/define.js'.
 
-+---------------+------------+
+The approximate results:
+
 | Name          | % Slower   |
-+===============+============+
+----------------|-------------
 | Fiber         | 0.0000 %   |
-+---------------+------------+
 | util.inherits | 24.010 %   |
-+---------------+------------+
 | augment       | 64.601 %   |
-+---------------+------------+
 | Modelo        | 65.594 %   |
-+---------------+------------+
 | Klass         | 74.658 %   |
-+---------------+------------+
 
-The `Fiber <https://github.com/linkedin/Fiber>`_ library is the clear winner
-with a 24% difference in run-time cost from the Node.js 'util.inherits'.
-Considering the implementation of 'util.inherits' is effectively a two line
-wrapper around the 'Object.create' built-in, it's quite a surprise that Fiber
-is *that* much faster. Now, the *actual* difference between Fiber and
-'util.inherits' is something on the order of ~0.00008 seconds which, frankly,
-is inconsequential.
+
+The [Fiber][] library is the clear winner with a 24% difference in run-time cost
+from the Node.js 'util.inherits'. Considering the implementation of
+'util.inherits' is effectively a two line wrapper around the 'Object.create'
+built-in, it's quite a surprise that Fiber is *that* much faster. Now, the
+*actual* difference between Fiber and 'util.inherits' is something on the order
+of ~0.00008 seconds which, frankly, is inconsequential.
 
 In fact, even the difference between Fiber and the bottom three libraries
 is inconsequential, not because the difference is not statistically
 significant but, because this benchmark only represents the time required to
-define a "class" or object prototype. This is something that happens, at most,
-once for each object defined in a code base. These run-time costs simply do not
-matter unless your code base generates hundreds of thousands of "class"
-definitions.
+define a "class", or object prototype. This is something that happens, at most,
+once for each class, or object prototype, defined in a code base. These
+run-time costs simply do not matter unless your code base generates hundreds
+of thousands of "class" definitions.
 
-A far more realistic measurement of overhead is time it takes to create an
-instance of an object defined using an inheritance library as creating
+### Instance Creation
+
+A far more realistic measurement of overhead is the time it takes to create an
+instance of an object defined using an inheritance library. After all, creating
 instances necessarily happens far more often than defining the prototype:
 
-+---------------+------------+
 | Name          | % Slower   |
-+===============+============+
+----------------|-------------
 | Modelo        | 0.0000 %   |
-+---------------+------------+
 | util.inherits | 3.4355 %   |
-+---------------+------------+
 | Fiber         | 45.017 %   |
-+---------------+------------+
 | augment       | 48.284 %   |
-+---------------+------------+
 | Klass         | 161.79 %   |
-+---------------+------------+
 
-Again, the difference between the top two is on the order of ~0.000000002
-seconds which, again, is inconsequential unless the number of instances pushes
-into the billions. This time, however, Fiber has fallen to third at a fairly
-large 45% difference in run-time cost.
+The above results are deceptive. While it appears as though Modelo is faster
+than the others, including the Node.js 'util.inherits', the reality is that
+the run-time difference between these libraries is so small that it exceeds
+the microsecond resolution of the timer used in the benchmarks. For all intents
+and purposes there is no measurable difference between any of these libraries.
 
-Modelo and 'util.inherits' excel here by not wrapping the object constructors
-which allows instances to be created at native speeds. The only cost to using
-Modelo is in the logic used to copy attributes from inherited prototypes.
+### Conclusion
 
-The above values only display the percent difference in runtimes. For more
-data run the default grunt task. It will run the benchmarks and show expanded
-results. The source for the benchmarks is in the benchmarks directory. Please
-open an issue on GitHub if you find a flaw in any of the benchmarks.
+When it comes down to it, you should pick your inheritance tool chain based on
+its interface. The run-time cost of most inheritance libraries on the market
+today is sub-microsecond and unlikely to affect the performance of your
+code.
 
-Setup
-=====
+Note: If you find a flaw in any of the benchmarks used please open an issue on
+GitHub.
 
-Node.js
--------
+## Setup
 
-This package is published through NPM under the name `modelo`::
+### Node.js
+
+This package is published through NPM under the name 'modelo':
 
     $ npm install modelo
 
-Once installed, simply `require("modelo")`.
+Once installed, simply 'require("modelo")'.
 
-Browser
--------
+### Browser
 
 This module uses browserify to create a browser compatible module. The default
 grunt workflow for this project will generate both a full and minified browser
-script in a build directory which can be included as a <script> tag::
+script in a build directory which can be included as a ```<script>``` tag:
 
     <script src="modelo.browser.min.js"></script>
 
-The package is exposed via the global name `modelo`.
+The package is exposed via the global name 'modelo'.
 
-Tests
------
+### Tests
 
-Running the `npm test` command will kick off the default grunt workflow. This
+Running the ```npm test``` command will kick off the default grunt workflow. This
 will lint using jslint, run the mocha/expect tests, generate a browser module,
-generate browser tests, and run the performance benchmarks.
+and generate browser tests.
 
-License
-=======
+### Benchmarks
 
-Modelo
-------
+Running ```grunt benchmark``` will run the benchmarks discussed above. You can
+optionally install the micro-time library (```npm install microtime```) to get
+microsecond precision.
+
+## License
 
 This project is released and distributed under an MIT License.
-
-::
 
     Copyright (C) 2012 Kevin Conway
 
@@ -213,22 +195,18 @@ This project is released and distributed under an MIT License.
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
     IN THE SOFTWARE.
 
-Contributors
-============
+## Contributors
 
-Style Guide
------------
+### Style Guide
 
 All code must validate against JSlint.
 
-Testing
--------
+### Testing
 
 Mocha plus expect. All tests and functionality must run in Node.js and the
 browser.
 
-Contributor's Agreement
------------------------
+### Contributor's Agreement
 
 All contribution to this project are protected by the contributors agreement
 detailed in the CONTRIBUTING file. All contributors should read the file before
@@ -236,3 +214,6 @@ contributing, but as a summary::
 
     You give us the rights to distribute your code and we promise to maintain
     an open source release of anything you contribute.
+
+
+[Fiber]: <https://github.com/linkedin/Fiber>
