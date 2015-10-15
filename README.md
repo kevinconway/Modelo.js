@@ -68,6 +68,14 @@ inheritance. To replace it, simply use the 'isInstance' method that gets added
 to your instances. It will return true for any base object in the inheritance
 tree.
 
+Additionally, the 'super_' attribute is still present on the new constructor in
+multiple inheritance but it only references the first prototype present in the
+call to 'inherits'. It is provided only for compatibility with `util.inherits`
+and, when using multiple inheritance, the 'super_' attribute should be avoided
+in favour of calling the target prototype directly if the form of
+`<Constructor>.prototype.<method>.call(this, ...)` or
+`<Constructor>.prototype.<method>.apply(this, ...)`.
+
 ## You Said Something About Fast?
 
 All inheritance libraries have their cost. When the overhead in question affects
