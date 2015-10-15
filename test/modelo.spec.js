@@ -203,6 +203,7 @@ describe('The Modelo library', function () {
     e.test();
     expect(e.tested).to.be(true);
     expect(e instanceof Base).to.be(true);
+    expect(Extension.super_).to.be(Base);
 
   });
 

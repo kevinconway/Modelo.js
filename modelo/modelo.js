@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-/*jslint node: true, indent: 2, passfail: true */
+/*jslint node: true, indent: 2, passfail: true, nomen: true */
 /*global define */
 "use strict";
 
@@ -125,6 +125,7 @@ function inherits(child, parent) {
 
   // This method brought to you by Node.js util module.
   // https://github.com/joyent/node/blob/master/lib/util.js
+  child.super_ = parent;
   child.prototype = Object.create(
     parent.prototype,
     {
