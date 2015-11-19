@@ -18,6 +18,9 @@
     "mix-in"
   ],
   "main": "./modelo/modelo.js",
+  "files": [
+    "./modelo/modelo.js"
+  ],
   "scripts": {
     "test": "grunt"
   },
