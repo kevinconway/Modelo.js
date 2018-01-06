@@ -2,7 +2,7 @@
   "author": "Kevin Conway <kevinjacobconway@gmail.com> (https://github.com/kevinconway)",
   "name": "modelo",
   "description": "A JavaScript object inheritance utility.",
-  "version": "4.2.1",
+  "version": "4.2.3",
   "homepage": "https://github.com/kevinconway/Modelo.js",
   "repository": {
     "type": "git",
@@ -17,9 +17,9 @@
     "mixin",
     "mix-in"
   ],
-  "main": "./modelo/modelo.js",
+  "main": "modelo/modelo.js",
   "files": [
-    "./modelo/modelo.js"
+    "modelo/modelo.js"
   ],
   "scripts": {
     "test": "grunt"
